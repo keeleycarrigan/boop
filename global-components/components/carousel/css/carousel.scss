@@ -1,0 +1,85 @@
+@import "global/base/css/utilities";
+
+.basic-carousel-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.basic-carousel-viewport {
+  overflow: hidden;
+  position: relative;
+  flex: 1;
+}
+
+.basic-carousel-stage {
+  min-width: 100%;
+  display: flex;
+  justify-content: flex-start;
+  position: absolute;
+  left: 0;
+  top: 0;
+  transition: left 400ms ease-out;
+
+  /**
+    The !important below is to easily deactivate a carousel and override
+    any inline widths necessary for the carousel.
+  **/
+  .inactive & {
+    height: auto;
+    width: 100% !important;
+    position: static;
+  }
+}
+
+.basic-carousel-nav-arrow {
+  color: $sky-3;
+  border: none;
+  background-color: transparent;
+
+  &[disabled],
+  &.disabled {
+    color: $slate-1;
+    cursor: default;
+    pointer-events: none;
+  }
+}
+
+.basic-carousel-panel {
+  padding-left: rems(10);
+  padding-right: rems(10);
+}
+
+.basic-carousel-nav-panel{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: rems(10);
+}
+
+.basic-carousel-nav-item-wrapper{
+  overflow-x: auto;
+  overflow-y: hidden;
+  flex: 1;
+}
+
+.basic-carousel-nav-items{
+  min-height: 100%;
+  min-width: 100%;
+  margin: rems(10) 0;
+  text-align: center;
+}
+
+.basic-carousel-nav-btn{
+  width: rems(20);
+  height: rems(20);
+  margin: rems((0, 10));
+  color: $sky-3;
+  border: 1px solid $sky-3;
+  border-radius: rems(20);
+  background-color: transparent;
+
+  &.active{
+    background-color: $sky-3;
+  }
+}

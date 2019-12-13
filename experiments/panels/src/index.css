@@ -1,0 +1,32 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-size: 36px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+    monospace;
+}
+
+.flickity-page-dots {
+  bottom: 0px;
+}
+
+.flickity-page-dots .dot {
+  height: 12px;
+  width: 12px;
+  opacity: 1;
+  background: transparent;
+  border: 2px solid white;
+  bottom: 0px;
+}
+
+.flickity-page-dots .dot.is-selected {
+  background: white;
+}

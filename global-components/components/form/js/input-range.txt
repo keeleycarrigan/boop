@@ -1,0 +1,296 @@
+((momappoki = {}, $, _) => {
+  momappoki.components = momappoki.components || {};
+
+  const LOG = _.get(momappoki, 'utilities.logMessage', $.noop);
+  const ROUND = _.get(momappoki, 'utilities.roundNumber', $.noop);
+  const $BODY = $('body');
+  const COMPONENT = 'mod_input_range';
+  const EVENT_NAMESPACE = 'inputRange';
+  const NAME_DATA = 'input-range';
+  const FIELD_DATA = 'input-range-field';
+  const OPTIONS_DATA = 'input-range-opts';
+  /**
+   * We have to do this because IE11 doesn't properly listen to events
+   * on range inputs. It sucks, and can be removed when IE11 is removed
+   * from our support matrix.
+   */
+  const IS_IE11 = !!navigator.userAgent.match(/Trident\/7\./);
+  const ON_INPUT_EVT = IS_IE11 ? 'change' : 'input';
+  const ON_CHANGE_EVT = IS_IE11 ? 'mouseup' : 'change';
+  const DEFAULTS = {
+    commas: true,
+    decimals: 0,
+    inputDecimals: 0,
+    disableKeyboardInput: false,
+    formatOnInput: false,
+    leftColor: '#3798C7',
+    rightColor: '#E5E5E5',
+    setRangeColor: true,
+    min: null, // Recommended to be set on input
+    max: null, // Recommended to be set on input
+    step: null, // Recommended to be set on input
+    largeStep: 2,
+    prefix: '', // '$', etc.
+    suffix: '', // '%', etc.
+    onIncrement: $.noop,
+    onDecrement: $.noop,
+    onChange: $.noop
+  };
+  let watchingInputFocus = false;
+  let instances = [];
+
+  function activateInputRange (e) {
+    const $range = $(e.currentTarget);
+    let inst = null;
+
+    if ($range.length) {
+      inst = $.data($range[0], COMPONENT);
+
+      inst && inst.activateInputWatch();
+    }
+  }
+
+  function toggleInputFocus (watching = true) {
+    watchingInputFocus = watching;
+
+    $BODY[watching ? 'on' : 'off'](`focus.${EVENT_NAMESPACE}`, `[data-${NAME_DATA}]`, activateInputRange);
+  }
+
+  class InputRange {
+    constructor ($el, options = {}) {
+      if (!(this instanceof InputRange)) { return new InputRange($el, options); }
+
+      if ($el && $el instanceof jQuery && $el.length) {
+        let inst = $.data($el[0], COMPONENT);
+
+        !watchingInputFocus && toggleInputFocus(true);
+
+        if (!inst) {
+          inst = $.data($el[0], COMPONENT, this);
+          instances = [...instances, this];
+
+          this.init($el, options);
+        }
+
+        return inst;
+      }
+
+      LOG('input-range.js:%cClass instances must be initialized with a jQuery element', 'color:red');
+    }
+
+    static getInstance ($el) {
+      if ($el && $el instanceof jQuery && $el.length) {
+        return $.data($el[0], COMPONENT);
+      }
+
+      return null;
+    }
+
+    init ($el, options) {
+      this.$el = $el;
+      this.inputID = this.$el.attr('id') || this.$el.attr('name');
+
+      const dataOpts = this.$el.data(OPTIONS_DATA) || {};
+
+      this.updateOptions($.extend(true, {}, DEFAULTS, options, dataOpts));
+
+      this.min = parseFloat(this.options.min || this.$el.attr('min'), 10);
+      this.max = parseFloat(this.options.max || this.$el.attr('max'), 10);
+      this.step = parseFloat(this.options.step || this.$el.attr('step'), 10);
+      this.largeStep = this.options.largeStep <= this.step ? this.step * 2 : this.options.largeStep;
+      this.value = parseFloat(this.$el.val(), 10);
+
+      this.setInputMask(this.$el.attr('id') || this.$el.attr('name'));
+      this.updateValue(this.value);
+      this.$el.attr('step', 'any');
+
+      this.$el.attr(`data-${NAME_DATA}`, 'initialized');
+    }
+
+    isDisabled () {
+      return this.$el.is('.disabled, [disabled]');
+    }
+
+    setRangeColor (val) {
+      const {
+        leftColor,
+        rightColor,
+        setRangeColor
+      } = this.options;
+
+      if (setRangeColor) {
+        const percent = ((parseFloat(val, 10) - this.min) * 100) / (this.max - this.min);
+        const range = 100 - percent;
+        // console.log(percent)
+        this.$el.css('background', `linear-gradient(to left, ${rightColor} ${range}%, ${leftColor} ${range}%)`);
+      }
+    }
+
+    setInputMask (rangeID) {
+      const $inputMask = $(`[data-${FIELD_DATA}="${rangeID}"]`);
+      const options = _.omit(this.options, ['decimals', 'inputDecimals', 'leftColor', 'rightColor', 'setRangeColor', 'step', 'onIncrement', 'onDecrement', 'onChange']);
+      const internalOpts = {
+        decimals: this.options.inputDecimals,
+        disableKeyTest (convertedKeyCode) {
+          const {
+            isUpDir,
+            isDownDir,
+            isPageUp,
+            isPageDown,
+            isEnd,
+            isHome,
+            isEnter
+          } = convertedKeyCode;
+
+          return isUpDir || isDownDir || isPageUp || isPageDown || isEnd || isHome || isEnter;
+        },
+        onBlur: (maskInst, cleanedVal) => {
+          this.updateValue(cleanedVal);
+        },
+        onKeydown: (maskInst, cleanedVal, formattedVal, e, keyCode) => {
+          const {
+            isUpDir,
+            isDownDir,
+            isPageUp,
+            isPageDown,
+            isEnd,
+            isHome,
+            isEnter
+          } = keyCode;
+
+          if (isEnter) {
+            this.updateValue(cleanedVal);
+          } else if (isUpDir || isDownDir || isPageUp || isPageDown || isEnd || isHome) {
+            this.handleKeyCode(_.get(momappoki.utilities.convertKeyCode(e), 'keyCode'));
+          }
+        }
+      };
+
+      if ($inputMask.length) {
+        this.inputMask = _.get(momappoki, 'components.InputMask') && new momappoki.components.InputMask($inputMask, $.extend({}, options, internalOpts));
+        this.inputDecimals = this.inputMask.options.decimals;
+        this.inputMask.$el.attr('disabled', this.isDisabled());
+      }
+    }
+
+    roundToStep (val) {
+      return ROUND((ROUND(val / this.step) * this.step), this.options.decimals);
+    }
+
+    onInput () {
+      this.value = parseFloat(this.$el.val(), 10);
+
+      if (!this.isDisabled()) {
+        const roundedVal = ROUND(this.value, this.options.decimals);
+        const roundedToStep = this.roundToStep(this.value);
+
+        if (roundedVal === roundedToStep) {
+          this.updateValue(roundedToStep);
+        } else {
+          this.setRangeColor(this.value);
+        }
+      }
+    }
+
+    updateValue (val) {
+      this.value = this.roundToStep(val);
+
+      this.$el
+        .val(this.value)
+        .attr('aria-valuenow', this.value);
+      this.setRangeColor(this.value);
+
+      this.inputMask && this.inputMask.setFormattedValue(this.value);
+    }
+
+    onChange () {
+      if (!this.isDisabled()) {
+        this.updateValue(this.value);
+      }
+    }
+
+    handleKeyCode (keyCode) {
+      let updateBy;
+
+      switch (keyCode) {
+        case 33:
+          updateBy = this.roundToStep(this.value + this.largeStep);
+          break;
+        case 34:
+          updateBy = this.roundToStep(this.value - this.largeStep);
+          break;
+        case 35:
+          updateBy = this.max;
+          break;
+        case 36:
+          updateBy = this.min;
+          break;
+        case 38:
+        case 39:
+          updateBy = this.roundToStep(this.value + this.step);
+          break;
+        case 37:
+        case 40:
+          updateBy = this.roundToStep(this.value - this.step);
+          break;
+        default:
+          updateBy = null;
+      }
+
+      if (typeof (updateBy) === 'number') {
+        if (updateBy >= this.min && updateBy <= this.max) {
+          this.updateValue(updateBy);
+        }
+      }
+    }
+
+    onKeyDown (e) {
+      if (!this.isDisabled()) {
+        const {
+          keyCode
+        } = momappoki.utilities.convertKeyCode(e);
+        /**
+          home = 36
+          end = 35
+          page up = 33
+          page down = 34
+        **/
+        if (keyCode >= 33 && keyCode <= 40) {
+          e.preventDefault();
+          this.$el.focus();
+        }
+
+        this.handleKeyCode(keyCode);
+      }
+    }
+
+    activateInputWatch () {
+      this.$el
+        .on(`blur.${EVENT_NAMESPACE}`, this.deactivateInputWatch.bind(this))
+        .on(`keydown.${EVENT_NAMESPACE}`, this.onKeyDown.bind(this))
+        .on(`${ON_INPUT_EVT}.${EVENT_NAMESPACE}`, this.onInput.bind(this))
+        .on(`${ON_CHANGE_EVT}.${EVENT_NAMESPACE}`, this.onChange.bind(this));
+
+      watchingInputFocus && toggleInputFocus(false);
+    }
+
+    deactivateInputWatch () {
+      this.$el
+        .off(`blur.${EVENT_NAMESPACE}`)
+        .off(`keydown.${EVENT_NAMESPACE}`)
+        .off(`${ON_INPUT_EVT}.${EVENT_NAMESPACE}`)
+        .off(`${ON_CHANGE_EVT}.${EVENT_NAMESPACE}`);
+
+      !watchingInputFocus && toggleInputFocus(true);
+    }
+
+
+    // Useful for safely updating instance options after component instantiation.
+    updateOptions (options = {}) {
+      this.options = $.extend(true, {}, this.options || {}, options);
+    }
+  }
+
+  momappoki.components.InputRange = InputRange;
+  window.momappoki = momappoki;
+})(window.momappoki, jQuery, _);

@@ -1,0 +1,262 @@
+@import "global/base/css/utilities";
+@import "accordion-elements";
+
+.basic-tabcordion {
+  border: 1px solid $slate-3;
+  position: relative;
+  z-index: 1;
+
+  &.horizontal {
+    @include clearfix();
+
+    > [class*="-col-"] {
+      padding-left: 0;
+      padding-right: 0;
+    }
+  }
+
+  @media #{$large} {
+    border: none;
+
+    &:not(.horizontal) {
+      display: flex;
+      flex-wrap: wrap;
+    }
+
+    &.horizontal {
+      &::after {
+        content: none;
+      }
+    }
+
+    &.pills {
+      justify-content: center;
+    }
+  }
+}
+
+.basic-tabcordion-panels {
+  display: none;
+
+  @media #{$large} {
+    @include hardShadow();
+    @include clearfix();
+    width: 100%;
+    display: block;
+    position: relative;
+    top: -1px;
+    z-index: 1;
+
+    .horizontal &,
+    .pills & {
+      top: 0;
+    }
+
+    .pills & {
+      padding-top: rems(30);
+      box-shadow: none;
+    }
+  }
+}
+
+
+
+.basic-tabcordion-content {
+  @include accordion-content;
+
+  @media #{$large} {
+    border: 1px solid $slate-3;
+
+    .pills & {
+      padding: 0;
+      background-color: transparent;
+      border: none;
+    }
+  }
+
+  &.active-item {
+    @media #{$large} {
+      box-shadow: none;
+      display: block;
+    }
+  }
+}
+
+
+.basic-tabcordion-trigger {
+
+
+  &:first-child {
+    border-top: none;
+
+    @media #{$large} {
+      border-top: 1px solid $slate-3;
+    }
+  }
+}
+
+.basic-tabcordion-trigger {
+  @include accordion-trigger;
+
+  &[class*="accounts-"] {
+    @media #{$large} {
+      height: rems(50);
+      line-height: rems(50);
+    }
+
+    .horizontal & {
+      padding-left: rems(40);
+
+      @media #{$large} {
+        height: rems(45);
+        padding-left: rems(23);
+        line-height: rems(45);
+      }
+    }
+
+    &::after {
+      content: "";
+      height: 100%;
+      width: 4px;
+      display: block;
+      position: absolute;
+      left: 0;
+      top: 0;
+
+      @media #{$large} {
+        height: 4px;
+        width: 100%;
+      }
+
+      .horizontal & {
+        @media #{$large} {
+          height: 100%;
+          width: 4px;
+        }
+      }
+    }
+  }
+
+  @each $name, $color in map-get($ux-colors, 'accounts') {
+    &.accounts-#{$name} {
+      &::after {
+        background-color: $color;
+      }
+    }
+  }
+
+  @media #{$large} {
+    height: rems(45);
+    width: auto;
+    line-height: rems(45);
+    padding-left: rems(20);
+    padding-right: rems(20);
+    background-color: $patina-2;
+    color: $slate-5;
+    border: 1px solid $slate-3;
+    text-align: center;
+    position: relative;
+
+    .no-touch & {
+      &:hover {
+        color: $slate-5;
+      }
+    }
+
+    .horizontal & {
+      margin-bottom:  -1px;
+      margin-right: -1px;
+      text-align: left;
+      position: relative;
+    }
+
+    .pills & {
+      height: rems(34);
+      margin-left: rems(10);
+      margin-right: rems(10);
+      background-color: $white;
+      color: $sky-3;
+      font-size: rems(14);
+      border-radius: rems(22.5);
+
+      .no-touch & {
+        &:hover {
+          background-color: $light-gray;
+          color: $sky-3;
+        }
+      }
+    }
+
+    .gray & {
+      color: $sky-3;
+
+      .no-touch & {
+        &:hover {
+          color: $sky-3;
+        }
+      }
+    }
+
+    + .basic-tabcordion-trigger {
+      margin-left: -1px;
+
+      .horizontal & {
+        margin-left: 0;
+      }
+    }
+  }
+
+  &.active-item {
+    @media #{$large} {
+      background-color: $white;
+      border-bottom-color: transparent;
+      z-index: 2;
+
+      .no-touch & {
+        &:hover {
+          background-color: $white;
+        }
+      }
+
+      .horizontal &  {
+        width: calc(100% + 1px);
+        border-bottom-color: $slate-3;
+        border-right: none;
+        margin-right: 0;
+
+        + .basic-tabcordion-trigger {
+          @include hardShadow($position: "top");
+        }
+      }
+
+      .pills & {
+        background-color: $slate-4;
+        color: $white;
+        border-color: $slate-4;
+
+        .no-touch & {
+          &:hover {
+            background-color: $slate-4;
+            color: $white;
+          }
+        }
+      }
+
+      .gray & {
+        color: $slate-5;
+
+        .no-touch & {
+          &:hover {
+            color: $slate-5;
+          }
+        }
+      }
+    }
+  }
+
+  &::before {
+    @media #{$large} {
+      display: none;
+    }
+  }
+}

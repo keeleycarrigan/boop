@@ -1,0 +1,87 @@
+// ====================================================================
+// Standard colors
+// Last Updated: 10/19/2016
+// NEW COLORS FROM DESIGN STYLEGUIDE
+// http://ux.int.momappoki.com/design/elements-index/color-2/
+// ====================================================================
+
+// Use the color() sass function
+// Example:  color: color("plum');
+// Example:  background: color('accounts','ira');
+// Example:  border: 1px solid color('accessible','ira');
+
+$ux-colors: (
+  "plum": #650360,
+  "toaster": #008486,
+  "patina-1": #E7F6FD,
+  "patina-2": #D7E4EB,
+  "patina-3": #C0D0D8,
+  "sky-1": #8BD3F5,
+  "sky-2": #3798C7,
+  "sky-3": #006899,
+  "sand": #E8D4A3,
+  "field-focus": #FFFFE7,
+  "white": #FFFFFF,
+  "light-gray": #F8F8F8,
+  "page-gray": #F2F2F2,
+  "slate-1": #E5E5E5,
+  "slate-2": #DDDDDD,
+  "slate-3": #959595,
+  "slate-4": #666666,
+  "slate-5": #2A2A2A,
+  "black": #000000,
+  "success": #0B8100,
+  "error": #D42825,
+  "accounts": (
+    "ira": #FF5722,
+    "cds" : #9C27B0,
+    "savings" : #3F51B5,
+    "checking" : #03A9F4,
+    "mortgage": #8BC34A,
+    "credit-card" : #FFC107,
+    "investments" : #009688,
+    "auto": #5E7B87,
+    "dealer": #424E61
+  ),
+  "accessible" : (
+    "ira": #FF5722,
+    "cds" : #9C27B0,
+    "savings" : #3F51B5,
+    "checking" : #027DB6,
+    "mortgage" : #5A822B,
+    "credit-card" : #FFC107,
+    "investments" : #008577,
+    "auto": #5E7B87
+  )
+);
+
+$nav-palette: (
+  ('bank', #03A9F4, #E5EDF1),
+  ('credit-card', #FDC02F, #F2EFE5),
+  ('auto', #607D8B, #EAEBEC),
+  ('home', #8BC34A, #ECEFE9),
+  ('invest', #009688, #E5EDEC),
+  ('learn', #650360, #F2F2F2)
+);
+
+$plum: map-get($ux-colors, "plum");
+$toaster: map-get($ux-colors, "toaster");
+$patina-1: map-get($ux-colors, "patina-1");
+$patina-2: map-get($ux-colors, "patina-2");
+$patina-3: map-get($ux-colors, "patina-3");
+$sky-1: map-get($ux-colors, "sky-1");
+$sky-2: map-get($ux-colors, "sky-2");
+$sky-3: map-get($ux-colors, "sky-3");
+$sand: map-get($ux-colors, "sand");
+$field-focus: map-get($ux-colors, "field-focus");
+$white: map-get($ux-colors, "white");
+$light-gray: map-get($ux-colors, "light-gray");
+$page-gray: map-get($ux-colors, "page-gray");
+$slate-1: map-get($ux-colors, "slate-1");
+$slate-2: map-get($ux-colors, "slate-2");
+$slate-3: map-get($ux-colors, "slate-3");
+$slate-4: map-get($ux-colors, "slate-4");
+$slate-5: map-get($ux-colors, "slate-5");
+$black: map-get($ux-colors, "black");
+$success: map-get($ux-colors, "success");
+$error: map-get($ux-colors, "error");

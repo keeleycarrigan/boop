@@ -1,0 +1,30 @@
+# General
+.DS_Store
+.sass-cache
+*.swp
+*.map
+Thumbs.db
+ehthumbs.db
+$RECYCLE.BIN/
+._*
+certificate.crt
+certificate.key
+dump.rdb
+dist/*
+
+# IDE-specific
+.vscode/*
+
+# Debugging
+npm-debug.log
+
+# Build Dependencies
+node_modules/*
+.cache/*
+.cache-require-paths.json
+
+# Compiled Files
+yarn-error.log
+.env
+.*.env
+override.env

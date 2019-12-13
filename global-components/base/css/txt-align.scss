@@ -1,0 +1,65 @@
+@import "utilities";
+
+@mixin text-align-levels (
+  $main-bps: $breakpoints,
+  $include-bps: ("sm", "lg"),
+  $bp-ranges: ("min", "only", "max")
+) {
+
+  $bp-lvls: length($include-bps);
+
+  @for $i from 1 through $bp-lvls {
+    $bp-def: map-get($main-bps, nth($include-bps, $i));
+    $size: nth($include-bps, $i);
+    $max-ranges: length($bp-ranges);
+
+    @for $j from 1 through $max-ranges {
+      $range: nth($bp-ranges, $j);
+      $range-name: $size;
+
+      @if ($range != "min") {
+        $range-name: #{$range-name}-#{$range};
+      }
+
+      @if (output-range($i, $bp-lvls, $range)) {
+        @if (map-has-key($bp-def, $range)) {
+          @media #{map-get($bp-def, $range)} {
+
+            .txt-right-#{$range-name} {
+              text-align: right;
+            }
+
+            .txt-left-#{$range-name} {
+              text-align: left;
+            }
+
+            .txt-center-#{$range-name} {
+              text-align: center;
+            }
+
+            .txt-top-#{$range-name} {
+              vertical-align: top;
+            }
+
+            .txt-middle-#{$range-name} {
+              vertical-align: middle;
+            }
+
+            .txt-bottom-#{$range-name} {
+              vertical-align: bottom;
+            }
+
+            .txt-baseline-#{$range-name} {
+              vertical-align: baseline;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+@include text-align-levels(
+  $include-bps: ("sm", "md", "lg", "xl"),
+  $bp-ranges: ("min")
+);

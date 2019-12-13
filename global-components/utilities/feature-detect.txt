@@ -1,0 +1,62 @@
+((momappoki, $, window, document) => {
+  'use strict';
+
+  momappoki.utilities = momappoki.utilities || {};
+
+  // Pointer Device Utility (Touch and Click Enabled)
+  // ---------------------------------------------------------------------------
+  momappoki.utilities.isPointerDevice = 'pointerEvents' in document.documentElement.style;
+
+  // Touch Device Utility (Touch Only Enabled)
+  // ---------------------------------------------------------------------------
+  momappoki.utilities.isTouchDevice = 'ontouchstart' in window;
+
+  // Browser Checking Utility
+  // ------------------------
+  momappoki.utilities.browser = {
+    // Is a any version of IE
+    ie: (() => {
+      if (/* @cc_on!@ */false || !!document.documentMode) {
+        $('html').addClass('ie');
+        return true;
+      }
+      return false;
+    })(),
+    // Is a any version of MS Edge
+    edge: (() => {
+      if (!(/* @cc_on!@ */false || !!document.documentMode) && !!window.StyleMedia) {
+        $('html').addClass('ie-edge');
+        return true;
+      }
+      return false;
+    })(),
+    // Is a any version of Safari
+    safari: (() => {
+      const safariCheck = /constructor/i.test(window.HTMLElement) || (p => p.toString() === '[object SafariRemoteNotification]')(!window.safari || window.safari.pushNotification);
+
+      if (safariCheck) {
+        $('html').addClass('safari');
+        return true;
+      }
+      return false;
+    })(),
+    // Is a any version of Chrome
+    chrome: (() => {
+      if (!!window.chrome && !!window.chrome.webstore) {
+        $('html').addClass('chrome');
+        return true;
+      }
+      return false;
+    })(),
+    // Is a any version of Firefox
+    mozilla: (() => {
+      if (typeof InstallTrigger !== 'undefined') {
+        $('html').addClass('mozilla');
+        return true;
+      }
+      return false;
+    })()
+  };
+
+  window.momappoki = momappoki;
+})(window.momappoki || {}, $, window, document);

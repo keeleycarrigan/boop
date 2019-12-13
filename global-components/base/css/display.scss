@@ -1,0 +1,28 @@
+@import "global/base/css/utilities";
+
+
+.off {
+  display: none !important;
+}
+
+.on {
+  display: block !important;
+}
+
+.on-inline {
+  display: inline-block !important;
+}
+
+.overhide {
+  overflow: hidden;
+}
+
+.js .hide-js {
+  display: none !important;
+}
+
+// Hide only visually, but have it available for screenreaders
+.visuallyhidden {
+  @include hideVisually;
+  position: absolute;
+}

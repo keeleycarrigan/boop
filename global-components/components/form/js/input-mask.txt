@@ -1,0 +1,238 @@
+((momappoki = {}, $, _) => {
+  momappoki.components = momappoki.components || {};
+
+  const LOG = _.get(momappoki, 'utilities.logMessage', $.noop);
+  const ROUND = _.get(momappoki, 'utilities.roundNumber', $.noop);
+  const WITH_COMMAS = _.get(momappoki, 'utilities.numberWithCommas', $.noop);
+  const CLEAN_NUMBER = _.get(momappoki, 'utilities.getCleanNumber', $.noop);
+  const FORMATTED_NUMBER = _.get(momappoki, 'utilities.getFormattedNumber', $.noop);
+  const $BODY = $('body');
+  const COMPONENT = 'mod_input_mask';
+  const EVENT_NAMESPACE = 'inputMask';
+  const NAME_DATA = 'input-mask';
+  const OPTIONS_DATA = 'input-mask-opts';
+  const DEFAULTS = {
+    allowOutOfRangeValues: false,
+    commas: true,
+    decimals: 0,
+    disableKeyboardInput: false,
+    formatOnInput: true,
+    formatWhenBlank: 'min', // 'none', 'prefix', 'suffix', 'max'
+    min: 0,
+    max: 9999999999999999,
+    prefix: '', // '$', etc.
+    suffix: '', // '%', etc.
+    disableKeyTest (convertedKeyCode) {
+      return convertedKeyCode.isEnter;
+    },
+    onBlur: $.noop,
+    onKeydown: $.noop
+  };
+  let watchingInputFocus = false;
+  let instances = [];
+
+  function activateInputMask (e) {
+    const $input = $(e.currentTarget);
+    let inst = null;
+
+    if ($input.length) {
+      inst = $.data($input[0], COMPONENT);
+
+      inst && inst.activateInputWatch();
+    }
+  }
+
+  function toggleInputFocus (watching = true) {
+    watchingInputFocus = watching;
+
+    $BODY[watching ? 'on' : 'off'](`focus.${EVENT_NAMESPACE}`, `[data-${NAME_DATA}]`, activateInputMask);
+  }
+
+  class InputMask {
+    constructor ($el, options = {}) {
+      if (!(this instanceof InputMask)) { return new InputMask($el, options); }
+
+      if ($el && $el instanceof jQuery && $el.length) {
+        let inst = $.data($el[0], COMPONENT);
+
+        !watchingInputFocus && toggleInputFocus(true);
+
+        if (!inst) {
+          inst = $.data($el[0], COMPONENT, this);
+          instances = [...instances, this];
+
+          this.init($el, options);
+        }
+
+        return inst;
+      }
+
+      LOG('input-mask.js:%cClass instances must be initialized with a jQuery element', 'color:red');
+    }
+
+    static getInstance ($el) {
+      if ($el && $el instanceof jQuery && $el.length) {
+        return $.data($el[0], COMPONENT);
+      }
+
+      return null;
+    }
+
+    init ($el, options) {
+      this.$el = $el;
+
+      const dataOpts = this.$el.data(OPTIONS_DATA) || {};
+
+      this.updateOptions($.extend(true, {}, DEFAULTS, options, dataOpts));
+      this.$el.attr(`data-${NAME_DATA}`, 'initialized');
+      this.min = parseFloat(this.options.min, 10);
+      this.max = parseFloat(this.options.max, 10);
+
+      this.$el.val(this.getFormattedValue(this.getCleanNumber(this.$el.val())));
+    }
+
+    setNumberToRange (num) {
+      let finalVal = num;
+
+      if (!this.options.allowOutOfRangeValues) {
+        if (finalVal < this.min) {
+          finalVal = this.min;
+        } else if (finalVal > this.max) {
+          finalVal = this.max;
+        }
+      }
+
+      return finalVal;
+    }
+
+    getCleanNumber (val) {
+      const valToClean = val || this.$el.val();
+      const cleanedVal = CLEAN_NUMBER(valToClean);
+      let finalVal;
+
+      if (!isNaN(cleanedVal)) {
+        finalVal = ROUND(cleanedVal, this.options.decimals);
+      }
+
+      return finalVal;
+    }
+
+    getFormattedValue (val) {
+      const {
+        decimals,
+        prefix,
+        suffix
+      } = this.options;
+      const hasInput = val || (typeof (val) === 'string' && val.trim() !== '');
+      let formatedVal;
+
+      if (hasInput) {
+        formatedVal = this.setNumberToRange(val);
+      } else {
+        switch (this.options.formatWhenBlank) {
+          case 'none':
+            formatedVal = null;
+            break;
+          case 'prefix':
+          case 'suffix':
+            formatedVal = '';
+            break;
+          case 'max':
+            formatedVal = this.max;
+            break;
+          case 'min':
+          default:
+            formatedVal = this.min;
+            break;
+        }
+      }
+
+      return formatedVal !== null ? FORMATTED_NUMBER(formatedVal, decimals, prefix, suffix) : '';
+    }
+
+
+    setFormattedValue (val) {
+      this.$el.val(this.getFormattedValue(val));
+
+      return this;
+    }
+
+    setSelector (pos) {
+      if (this.$el[0].setSelectionRange) {
+        this.$el[0].setSelectionRange(pos, pos);
+      } else if (this.$el[0].createTextRange) {
+        const range = this.$el[0].createTextRange();
+        range.collapse(true);
+        range.moveEnd('character', pos);
+        range.moveStart('character', pos);
+        range.select();
+      }
+
+      return this;
+    }
+
+    formatInput (callback = () => {}, ...callbackArgs) {
+      const savedSelection = this.$el[0].selectionStart;
+      const cleanedVal = this.getCleanNumber();
+      const formattedVal = this.getFormattedValue(cleanedVal);
+
+      this.$el.val(formattedVal);
+      this.setSelector(savedSelection);
+
+      callback(this, cleanedVal, formattedVal, ...callbackArgs);
+    }
+
+    onKeyDown (e) {
+      const {
+        disableKeyboardInput,
+        formatOnInput
+      } = this.options;
+      const keyCodeConverted = momappoki.utilities.convertKeyCode(e);
+      const {
+        isEnter,
+        isTab,
+        isLeftDir,
+        isRightDir
+      } = keyCodeConverted;
+
+      if ((disableKeyboardInput && !isTab) || this.options.disableKeyTest(keyCodeConverted)) {
+        e.preventDefault();
+      }
+
+      // Need this timeout to get accurate input value on keydown.
+      setTimeout(() => {
+        if (formatOnInput && !isLeftDir && !isRightDir && !isTab) {
+          this.formatInput(this.options.onKeydown, keyCodeConverted);
+        } else {
+          const cleanedVal = this.getCleanNumber();
+          this.options.onKeydown(this, cleanedVal, this.getFormattedValue(cleanedVal), e, keyCodeConverted);
+        }
+      }, 0);
+    }
+
+    activateInputWatch () {
+      this.$el
+        .on(`blur.${EVENT_NAMESPACE}`, this.deactivateInputWatch.bind(this))
+        .on(`keydown.${EVENT_NAMESPACE}`, this.onKeyDown.bind(this));
+
+      watchingInputFocus && toggleInputFocus(false);
+    }
+
+    deactivateInputWatch () {
+      this.$el
+        .off(`blur.${EVENT_NAMESPACE}`)
+        .off(`keydown.${EVENT_NAMESPACE}`);
+
+      this.formatInput(this.options.onBlur);
+
+      !watchingInputFocus && toggleInputFocus(true);
+    }
+
+    // Useful for safely updating instance options after component instantiation.
+    updateOptions (options = {}) {
+      this.options = $.extend(true, {}, this.options || {}, options);
+    }
+  }
+
+  momappoki.components.InputMask = InputMask;
+})(window.momappoki, jQuery, _);

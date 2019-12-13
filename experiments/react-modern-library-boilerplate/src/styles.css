@@ -1,0 +1,16 @@
+/* add css styles here (optional) */
+
+.foo, .bar {
+  display: block;
+  margin: 2em auto;
+  border: 2px solid #000;
+  font-size: 2em;
+}
+
+.foo {
+  background: blue;
+}
+
+.bar {
+  background: red;
+}

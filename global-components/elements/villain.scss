@@ -1,0 +1,18 @@
+@import "global/base/css/utilities";
+
+.villain {
+  @include MomaFont();
+  background-repeat: no-repeat;
+  background-position: center bottom;
+  border-bottom: 1px solid #CCC;
+
+  @media #{$medium-max} {
+    background-image: none !important;
+  }
+
+  &.lg-no-bg {
+    @media #{$large-max} {
+      background-image: none !important;
+    }
+  }
+}

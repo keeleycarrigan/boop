@@ -1,0 +1,130 @@
+@import "global/base/css/utilities";
+@import "accordion-elements";
+
+.basic-accordion {
+  border: 1px solid $slate-3;
+
+  &.flat {
+    border: none;
+  }
+}
+
+.basic-accordion-content {
+  @include accordion-content;
+
+  .flat & {
+    padding-top: 0;
+    padding-bottom: rems(10);
+    padding-left: rems(18);
+    background-color: transparent;
+    border-top: none;
+    box-shadow: none;
+  }
+}
+
+
+.basic-accordion-trigger {
+  @include accordion-trigger;
+
+  &:first-child {
+    border-top: none;
+  }
+
+  .flat &,
+  .stepped & {
+    height: auto;
+    padding-top: rems(12);
+    padding-bottom: rems(12);
+  }
+
+  .flat & {
+    padding-left: rems(18);
+    background-color: transparent;
+    line-height: 1.5;
+    border: none;
+    overflow: visible;
+    white-space: normal;
+
+    .no-touch & {
+      &:hover {
+        background-color: transparent;
+      }
+    }
+
+    &.active-item::before {
+      top: rems(20);
+      transform: rotate(90deg);
+    }
+  }
+
+  .stepped & {
+    padding-left: rems(20);
+    padding-right: rems(20);
+    background-color: $white;
+    color: $black;
+    font-size: rems(14);
+    line-height: 1.5;
+    align-items: flex-start;
+
+    @media #{$large} {
+      padding-top: rems(5);
+      padding-bottom: rems(5);
+      font-size: rems(16);
+    }
+
+    .no-touch & {
+      &:hover {
+        color: $black;
+        background-color: $white;
+      }
+    }
+  }
+
+  .disabled &,
+  &.disabled {
+    color: $slate-3;
+
+    .stepped & {
+      color: $slate-3;
+    }
+  }
+
+  .completed &,
+  &.completed {
+    .stepped & {
+      &::before {
+        display: inline-block;
+        position: static;
+        transform: none;
+      }
+    }
+  }
+
+  &::before {
+    // &.active-item {
+    //   .flat & {
+    //     top: 18px;
+    //     transform: rotate(90deg);
+    //   }
+    // }
+
+    .stepped & {
+      content: "\e916";
+      padding: rems((3, 10, 0, 0));
+      color: $success;
+      font-size: rems(14);
+      display: none;
+
+      @media #{$large} {
+        font-size: rems(16);
+      }
+    }
+
+    .flat & {
+      left: 3px;
+      top: rems(18);
+      transform: none;
+      transition: top 200ms linear, transform 200ms linear;
+    }
+  }
+}

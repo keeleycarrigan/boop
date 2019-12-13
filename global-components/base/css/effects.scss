@@ -1,0 +1,16 @@
+@import "global/base/css/utilities";
+
+.shadow-top {
+  @include hardShadow($position: "top");
+}
+
+.shadow-bottom {
+  @include hardShadow();
+}
+
+.fade-in {
+  /**
+    Apply "active" to the element for the fade in effect.
+  **/
+  @include fadeTransition();
+}

@@ -1,0 +1,21 @@
+@import "global/base/css/utilities";
+
+.link-inline {
+  font-weight: 700;
+}
+
+.link-dark-bg {
+  color: $sky-1;
+
+  .no-touch & {
+    &:hover {
+      color: $patina-1;
+    }
+  }
+}
+
+.link-white,
+.no-touch .link-white:hover {
+  color: $white;
+  text-decoration: underline;
+}

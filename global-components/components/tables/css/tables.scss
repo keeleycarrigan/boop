@@ -1,0 +1,186 @@
+@import "global/base/css/utilities";
+
+@mixin base-table {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  background-color: $white;
+  position: relative;
+}
+
+@mixin base-table-head {
+  padding: 0;
+  background-color: $slate-4;
+  color: $white;
+  border: 0;
+  overflow: hidden;
+}
+
+@mixin base-table-row {
+  border: none;
+  display: table-row;
+
+  &:nth-child(even) {
+    background-color: $page-gray;
+  }
+}
+
+@mixin base-table-cell {
+  padding: rems((10, 15));
+  font-size: rems(14);
+  line-height: 1.5;
+  font-weight: normal;
+}
+
+.basic-small-table,
+.basic-table {
+  @include base-table;
+}
+
+.basic-table {
+  display: block;
+
+  @media #{$large} {
+    display: table;
+  }
+}
+
+.basic-table-caption {
+  @include hideVisually;
+}
+
+.basic-table-head,
+.basic-small-table-head {
+  @include base-table-head;
+}
+
+.basic-table-head {
+  display: none;
+
+  @media #{$large} {
+    display: table-header-group;
+  }
+}
+
+.basic-small-table-col-header,
+.basic-table-col-header {
+  height: rems(45);
+  padding: rems((10, 15));
+  font-weight: bold;
+  font-size: rems(11);
+  line-height: rems(15);
+  text-transform: uppercase;
+  border-right: 1px solid $slate-3;
+
+  &:last-child {
+    border-right: none;
+  }
+}
+
+.basic-table-body {
+  display: block;
+
+  @media #{$large} {
+    display: table-row-group;
+  }
+}
+
+.basic-small-table-row {
+  @include base-table-row;
+}
+
+.basic-table-row {
+  background-color: $white;
+  display: flex;
+  flex-wrap: wrap;
+
+  @media #{$large} {
+    @include base-table-row;
+  }
+}
+
+.basic-small-table-row-head,
+.basic-small-table-cell {
+  @include base-table-cell;
+}
+
+.basic-table-row-head,
+.basic-table-cell {
+  @include base-table-cell;
+  display: block;
+
+  @media #{$large} {
+    display: table-cell;
+  }
+
+  &::before {
+    content: attr(data-title);
+    font-weight: bold;
+    color: currentColor;
+    font-size: rems(11);
+    line-height: rems(20);
+    text-transform: uppercase;
+
+    @media #{$large} {
+      content: none;
+    }
+  }
+}
+
+.basic-small-table-row-head {
+  text-align: left;
+}
+
+.basic-table-row-head {
+  text-align: left;
+
+  @media #{$medium-max} {
+    @include hardShadow();
+    min-height: rems(45);
+    width: 100%;
+    background-color: $slate-4;
+    color: $white;
+  }
+
+  &::before {
+    padding-right: rems(10);
+    color: currentColor;
+  }
+}
+
+.basic-small-table-cell {
+  text-align: right;
+}
+
+.basic-table-cell {
+  width: 50%;
+  // color: $slate-5;
+
+  @media #{$large} {
+    width: auto;
+    text-align: right;
+  }
+
+  &::before {
+    color: currentColor;
+    display: block;
+  }
+}
+
+$total-columns: 12;
+
+@media #{$medium-max} {
+  @for $i from 1 through $total-columns {
+    .sm-basic-table-col-#{$i} {
+      @include col-maker($columns: $i);
+    }
+  }
+}
+
+@media #{$large} {
+  @for $i from 1 through $total-columns {
+    .lg-basic-table-col-#{$i} {
+      @include col-maker($columns: $i);
+    }
+  }
+}

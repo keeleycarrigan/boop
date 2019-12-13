@@ -1,0 +1,208 @@
+((momappoki = {}, $, _) => {
+  momappoki.components = momappoki.components || {};
+
+  const LOG = _.get(momappoki, 'utilities.logMessage', $.noop);
+  const $BODY = $('body');
+  const COMPONENT = 'mod_input_stepper';
+  const EVENT_NAMESPACE = 'inputStepper';
+  const NAME_DATA = 'input-stepper';
+  const FIELD_DATA = 'input-stepper-field';
+  const OPTIONS_DATA = 'input-stepper-opts';
+  const INC_ACTION_DATA = 'input-stepper-increase';
+  const DEC_ACTION_DATA = 'input-stepper-decrease';
+  const DEFAULTS = {
+    commas: true,
+    decimals: 0,
+    disableKeyboardInput: false,
+    formatOnInput: false,
+    incStep: 50,
+    decStep: 50,
+    min: 0,
+    max: 1000, // Should be set on input
+    prefix: '', // '$', etc.
+    suffix: '', // '%', etc.
+    onIncrement: $.noop,
+    onDecrement: $.noop,
+    onChange: $.noop
+  };
+  let listentingToClicks = false;
+  let instances = [];
+
+  function handleActionClick (e) {
+    e.preventDefault();
+
+    const $clicked = $(e.currentTarget);
+    const id = $clicked.data(INC_ACTION_DATA) || $clicked.data(DEC_ACTION_DATA);
+
+    if (typeof (id) !== 'undefined' && !$clicked.is('.disabled') && !$clicked.is('[disabled]')) {
+      const steppers = instances.filter(inst => inst.inputID === id);
+
+      if (steppers.length) {
+        steppers.forEach((stepper, idx) => {
+          /**
+            This is to account for an element being initialized, removed, and a
+            similiar one being added later. Yes, this happens :(
+          **/
+          const $input = _.get(stepper, 'inputMask.$el');
+
+          if ($input && $input.length) {
+            stepper.onAction($clicked.data(INC_ACTION_DATA) ? 'increase' : 'decrease');
+          } else {
+            instances = instances.filter((inst, instIdx) => instIdx !== idx);
+          }
+        });
+      } else {
+        LOG('input-stepper.js:%cInput Stepper ID doesn\'t exist', 'color:red');
+      }
+    }
+  }
+
+  function applyClickListener () {
+    listentingToClicks = true;
+
+    $BODY.on(`click.${EVENT_NAMESPACE}`, `[data-${INC_ACTION_DATA}], [data-${DEC_ACTION_DATA}]`, handleActionClick);
+  }
+
+  class InputStepper {
+    constructor ($el, options = {}) {
+      if (!(this instanceof InputStepper)) { return new InputStepper($el, options); }
+
+      if ($el && $el instanceof jQuery && $el.length) {
+        let inst = $.data($el[0], COMPONENT);
+
+        !listentingToClicks && applyClickListener();
+
+        if (!inst) {
+          inst = $.data($el[0], COMPONENT, this);
+          instances = [...instances, this];
+
+          this.init($el, options);
+        }
+
+        return inst;
+      }
+
+      LOG('input-stepper.js:%cClass instances must be initialized with a jQuery element', 'color:red');
+    }
+
+    static getInstance ($el) {
+      if ($el && $el instanceof jQuery && $el.length) {
+        return $.data($el[0], COMPONENT);
+      }
+
+      return null;
+    }
+
+    init ($el, options) {
+      this.$el = $el;
+
+      const dataOpts = this.$el.data(OPTIONS_DATA) || {};
+      this.updateOptions($.extend(true, {}, DEFAULTS, options, dataOpts));
+
+      this.setInputMask();
+
+      if (this.inputMask && typeof (this.inputID) !== 'undefined') {
+        this.$incBtns = $(`[data-${INC_ACTION_DATA}="${this.inputID}"]`);
+        this.$decBtns = $(`[data-${DEC_ACTION_DATA}="${this.inputID}"]`);
+
+        this.$el.attr(`data-${NAME_DATA}`, 'initialized');
+      } else {
+        LOG('input-stepper.js:%cInput must have an [id] or [name] that matches the counter total attached to it.', 'color:red');
+      }
+    }
+
+    setInputMask () {
+      const options = _.omit(this.options, ['incStep', 'decStep', 'onIncrement', 'onDecrement', 'onChange']);
+      const internalOpts = {
+        onKeydown: (maskInst, cleanedVal, formattedVal, keyCode) => {
+          const {
+            isUpDir,
+            isDownDir
+          } = keyCode;
+
+          if (isUpDir || isDownDir) {
+            this.onAction(isUpDir ? 'increase' : 'decrease');
+          } else {
+            this.setActions(cleanedVal);
+          }
+        }
+      };
+
+      this.inputMask = _.get(momappoki, 'components.InputMask') && new momappoki.components.InputMask(this.$el.find(`[data-${FIELD_DATA}]`), $.extend({}, options, internalOpts));
+
+      if (_.get(this.inputMask, '$el')) {
+        this.inputID = this.inputMask.$el.attr('id') || this.inputMask.$el.attr('name');
+      }
+    }
+
+    incrementValue (val = 0) {
+      const newVal = val + this.options.incStep;
+      const valid = newVal <= this.options.max;
+
+      return valid ? newVal : null;
+    }
+
+    decrementValue (val = 0) {
+      const newVal = val - this.options.decStep;
+      const valid = newVal >= this.options.min;
+
+      return valid ? newVal : null;
+    }
+
+    setActions (val) {
+      const overMax = val + this.options.incStep > this.options.max;
+      const underMin = val - this.options.decStep < this.options.min;
+
+      this.$incBtns
+        .toggleClass('disabled', overMax)
+        .attr({ 'aria-disabled': overMax });
+      this.$decBtns
+        .toggleClass('disabled', underMin)
+        .attr({ 'aria-disabled': underMin });
+    }
+
+    onAction (action) {
+      const currentVal = this.inputMask.getCleanNumber();
+      let newVal = null;
+      let onActionEvent = 'onIncrement';
+
+      if (action === 'increase') {
+        newVal = this.incrementValue(currentVal);
+      } else if (action === 'decrease') {
+        newVal = this.decrementValue(currentVal);
+        onActionEvent = 'onDecrement';
+      }
+
+      if (newVal !== null) {
+        this.inputMask.setFormattedValue(newVal);
+        this.setActions(newVal);
+
+        if (action === 'increase') {
+          this.options.onIncrement(newVal, this);
+        } else {
+          this.options.onDecrement(newVal, this);
+        }
+
+        this.options.onChange(newVal, this);
+        $BODY
+          .trigger(`momappoki.${EVENT_NAMESPACE}.onChange`, [newVal, this])
+          .trigger(`momappoki.${EVENT_NAMESPACE}.${onActionEvent}`, [newVal, this]);
+      }
+    }
+
+    // Useful for safely updating instance options after component instantiation.
+    updateOptions (options = {}) {
+      this.options = $.extend(true, {}, this.options || {}, options);
+
+      return this;
+    }
+
+    updateInput () {
+      this.inputMask.setFormattedValue(this.inputMask.getCleanNumber());
+
+      return this;
+    }
+  }
+
+  momappoki.components.InputStepper = InputStepper;
+})(window.momappoki, jQuery, _);

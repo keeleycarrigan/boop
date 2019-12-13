@@ -1,0 +1,34 @@
+{
+  "plugins": [
+    "@babel/plugin-proposal-class-properties",
+    "@babel/plugin-proposal-object-rest-spread",
+    "@babel/plugin-proposal-export-default-from",
+    "@babel/plugin-proposal-export-namespace-from",
+    "@babel/plugin-transform-modules-commonjs",
+    [
+      "module-resolver",
+      {
+        "root": [
+          "./src"
+        ],
+        "alias": {
+          "DataMask": "./src/DataMask",
+          "General": "./src/General",
+          "GlobalListeners": "./src/GlobalListeners",
+          "Listener": "./src/Listener",
+          "LocalData": "./src/LocalData",
+          "Numbers": "./src/Numbers",
+          "Validation": "./src/Validation"
+        }
+      }
+    ]
+  ],
+  "presets": [
+    [
+      "@babel/env",
+      {
+        "modules": false
+      }
+    ]
+  ]
+}

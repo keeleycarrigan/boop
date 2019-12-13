@@ -1,0 +1,62 @@
+// Media Query Ranges
+$small-range: (0em, 40em); //0 - 640px
+$medium-range: (40.0625em, 48em); //641px - 768px
+$medium-lower-range: (40.0625em, 44.0625em); //641px - 705px
+$large-range: (48.0625em, 64em); //769px - 1024px
+$large-lower-range: (48.0625em, 56em); //769px - 896px
+$xlarge-range: (64.0625em, 83.125em); //1025px - 1330px
+$xxlarge-range: (83.1875em); // 1331px -
+$xlarge-lower-range: (64.0625em, 73.75em); //1025px - 1180px
+
+$screen: "only screen";
+
+$landscape: "#{$screen} and (orientation: landscape)";
+$portrait: "#{$screen} and (orientation: portrait)";
+
+$small: $screen;
+$small-only: "#{$screen} and (max-width: #{upper-bound($small-range)})";
+
+$medium: "#{$screen} and (min-width:#{lower-bound($medium-range)})";
+$medium-max: "#{$screen} and (max-width:#{upper-bound($medium-range)})";
+$medium-only: "#{$screen} and (min-width:#{lower-bound($medium-range)}) and (max-width:#{upper-bound($medium-range)})";
+$medium-lower: "#{$screen} and (min-width:#{lower-bound($medium-lower-range)}) and (max-width:#{upper-bound($medium-lower-range)})";
+
+$small-and-medium-only: "#{$screen} and (min-width:0) and (max-width:#{upper-bound($medium-range)})";
+
+$large: "#{$screen} and (min-width:#{lower-bound($large-range)})";
+$large-max: "#{$screen} and (max-width:#{upper-bound($large-range)})";
+$large-only: "#{$screen} and (min-width:#{lower-bound($large-range)}) and (max-width:#{upper-bound($large-range)})";
+$large-lower: "#{$screen} and (min-width:#{lower-bound($large-lower-range)}) and (max-width:#{upper-bound($large-lower-range)})";
+
+$xlarge: "#{$screen} and (min-width:#{lower-bound($xlarge-range)})";
+$xlarge-max: "#{$screen} and (max-width:#{upper-bound($xlarge-range)})";
+$xlarge-only: "#{$screen} and (min-width:#{lower-bound($xlarge-range)}) and (max-width:#{upper-bound($xlarge-range)})";
+$xlarge-lower: "#{$screen} and (min-width:#{lower-bound($xlarge-lower-range)}) and (max-width:#{upper-bound($xlarge-lower-range)})";
+
+$xxlarge: "#{$screen} and (min-width:#{lower-bound($xxlarge-range)})";
+
+/**
+  THIS MAP IS USED TO EASILY ITERATE OVER AND MAKE RESPONSIVE
+  UTILITY CLASSES.
+**/
+$breakpoints:(
+  "sm": (
+    "min": $small,
+    "only": $small-only
+  ),
+  "md": (
+    "min": $medium,
+    "only": $medium-only,
+    "max": $medium-max
+  ),
+  "lg": (
+    "min": $large,
+    "only": $large-only,
+    "max": $large-max
+  ),
+  "xl": (
+    "min": $xlarge,
+    "only": $xlarge-only,
+    "max": $xlarge-max
+  )
+);

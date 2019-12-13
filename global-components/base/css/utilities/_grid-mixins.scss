@@ -1,0 +1,240 @@
+$total-columns: 12 !default;
+$opposite-direction: right;
+$default-float: left;
+$column-gutter: 20;
+$max-content-width: 1152;
+$row-width: $max-content-width + $column-gutter;
+
+@mixin flex-align ($name: "") {
+  .align-items-center-#{$name} {
+    align-items: center;
+  }
+
+  .align-self-center-#{$name} {
+    align-self: center;
+  }
+
+  .align-items-start-#{$name} {
+    align-items: flex-start;
+  }
+
+  .align-self-start-#{$name} {
+    align-self: flex-start;
+  }
+
+  .align-items-end-#{$name} {
+    align-items: flex-end;
+  }
+
+  .align-self-end-#{$name} {
+    align-self: flex-end;
+  }
+
+  .align-items-base-#{$name} {
+    align-items: baseline;
+  }
+
+  .align-self-base-#{$name} {
+    align-self: baseline;
+  }
+
+  .align-items-stretch-#{$name} {
+    align-items: stretch;
+  }
+
+  .align-self-stretch-#{$name} {
+    align-self: stretch;
+  }
+
+  .align-content-center-#{$name} {
+    align-content: center;
+  }
+
+  .align-content-between-#{$name} {
+    align-content: space-between;
+  }
+
+  .align-content-around-#{$name} {
+    align-content: space-around;
+  }
+
+  .align-content-end-#{$name} {
+    align-content: flex-end;
+  }
+
+  .align-content-start-#{$name} {
+    align-content: flex-start;
+  }
+
+  .align-content-stretch-#{$name} {
+    align-content: stretch;
+  }
+
+  .justify-center-#{$name} {
+    justify-content: center;
+  }
+
+  .justify-between-#{$name} {
+    justify-content: space-between;
+  }
+
+  .justify-around-#{$name} {
+    justify-content: space-around;
+  }
+
+  .justify-end-#{$name} {
+    justify-content: flex-end;
+  }
+
+  .justify-start-#{$name} {
+    justify-content: flex-start;
+  }
+
+  .row-reverse-#{$name} {
+    flex-direction: row-reverse;
+  }
+
+  .row-#{$name} {
+    flex-direction: row;
+  }
+
+  .column-reverse-#{$name} {
+    flex-direction: column-reverse;
+  }
+
+  .column-#{$name} {
+    flex-direction: column;
+  }
+}
+
+
+@mixin col-maker (
+  $totalCols: $total-columns,
+  $columns: false
+) {
+
+  @if $columns {
+    width: grid-calc($columns, $totalCols);
+  }
+
+  padding-right: ($column-gutter / 2) * 1px;
+  padding-left: ($column-gutter / 2) * 1px;
+}
+
+@mixin grid-classes ($size) {
+  @for $i from 1 through $total-columns {
+    .#{$size}-col-#{$i} {
+      @include col-maker($columns: $i);
+      flex: 0 0 auto;
+      float: left;
+    }
+  }
+  @for $i from 1 through $total-columns - 1 {
+    .#{$size}-offset-col-#{$i}  {
+      margin-#{$default-float}: grid-calc($i, $total-columns);
+    }
+
+    .#{$size}-push-col-#{$i} {
+      #{$default-float}: grid-calc($i, $total-columns);
+      position: relative;
+      right: auto;
+    }
+
+    .#{$size}-pull-col-#{$i} {
+      #{$opposite-direction}: grid-calc($i, $total-columns);
+      position: relative;
+      left: auto;
+    }
+
+    .#{$size}-center-col-#{$i} {
+      @include col-maker($columns: $i);
+      margin-left: auto;
+      margin-right: auto;
+      float: none;
+    }
+  }
+
+  .#{$size}-flex-col {
+    padding-right: ($column-gutter / 2) * 1px;
+    padding-left: ($column-gutter / 2) * 1px;
+    flex: 1;
+
+    .collapse > & {
+      padding-right: 0;
+      padding-left: 0;
+    }
+  }
+
+  .#{$size}-reset-order {
+    margin-#{$default-float}: 0;
+    margin-#{$opposite-direction}: 0;
+    right: auto;
+    left: auto;
+    float: $default-float;
+    position: static;
+  }
+}
+
+@mixin grid-levels (
+  $main-bps: $breakpoints,
+  $include-bps: ("sm", "lg"),
+  $bp-ranges: ("min", "only", "max")
+) {
+
+  $bp-lvls: length($include-bps);
+
+  @for $i from 1 through $bp-lvls {
+    $bp-def: map-get($main-bps, nth($include-bps, $i));
+    $size: nth($include-bps, $i);
+    $max-ranges: length($bp-ranges);
+
+    @for $j from 1 through $max-ranges {
+      $range: nth($bp-ranges, $j);
+      $range-name: $size;
+      $utility-range-name: "#{$size}-up";
+
+      @if ($range == "only") {
+        $utility-range-name: $size;
+      } @else if ($range == "max") {
+        $utility-range-name: "#{$size}-down";
+      }
+
+      @if ($range != "min") {
+        $range-name: #{$range-name}-#{$range};
+      }
+
+      @if (output-range($i, $bp-lvls, $range)) {
+        @if (map-has-key($bp-def, $range)) {
+          @media #{map-get($bp-def, $range)} {
+
+            @if ($range == "min") {
+              @include grid-classes($size: $range-name);
+            }
+
+            .show-#{$utility-range-name} {
+              display: block !important;
+            }
+
+            .hide-#{$utility-range-name} {
+              display: none !important;
+            }
+
+            .collapse-col-#{$utility-range-name} {
+              padding-left: 0;
+              padding-right: 0;
+            }
+
+            @include flex-align($name: $utility-range-name);
+          }
+        }
+      }
+    }
+  }
+}
+
+@mixin base-row {
+  max-width: $row-width * 1px;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+}

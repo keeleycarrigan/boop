@@ -1,0 +1,46 @@
+@import "global/base/css/utilities";
+
+.star-rating {
+  height: rems(30);
+	width: rems(130);
+  position: relative;
+
+  .active {
+    fill: #F1BA28;
+  }
+
+  &.small {
+    height: rems(22);
+    width: rems(87.5);
+  }
+
+  &.large {
+    height: rems(44);
+    width: rems(195);
+  }
+}
+
+.star-rating-controls {
+	height: 100%;
+	width: 100%;
+  font-size: 0;
+  display: flex;
+	position: absolute;
+	left: 0;
+	top: 0;
+	z-index: 2;
+}
+
+.star-rating-control-label {
+  flex: 1;
+  display: flex;
+  cursor: pointer;
+}
+
+.star-rating-control-input {
+  flex: 1;
+  background: none;
+  border: none;
+  outline: none;
+  -webkit-appearance: none; // Setting this for other browsers messes default outline up.
+}

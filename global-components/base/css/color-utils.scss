@@ -1,0 +1,29 @@
+@import "utilities";
+
+/**
+  OUTPUTTING TEXT, BORDER, & BACKGROUND COLOR UTILITIES BASED ON
+  UX COLOR MAP. IGNORES VALUES THAT ARE MAPS.
+**/
+@mixin colorUtils($name, $color) {
+  .txt-#{$name} {
+    color: $color;
+  }
+
+  .bg-#{$name} {
+    background-color: $color;
+  }
+
+  .border-#{$name} {
+    border-color: $color;
+  }
+}
+
+@each $name, $color in $ux-colors {
+  @if type-of($color) == "color" {
+    @include colorUtils($name, $color);
+  } @else if type-of($color) == "map" {
+    @each $subName, $subColor in $color {
+      @include colorUtils(#{$name}-#{$subName}, $subColor);
+    }
+  }
+}

@@ -1,0 +1,44 @@
+'use strict';
+
+((momappoki, $, _, window) => {
+  momappoki.utilities = momappoki.utilities || {};
+
+  function createUtils () {
+    function roundNumber (num, decimals = 0) {
+      const number = typeof (num) === 'string' ? parseFloat(num) : num;
+
+      // This crazy Number initialization more accurately rounds numbers.
+      return Number(`${Math.round(`${isNaN(number) ? 0 : number}e${decimals}`)}e-${decimals}`);
+    }
+
+    function numberWithCommas (num) {
+      const number = typeof (num) === 'string' ? num : num.toString();
+      const parts = number.toString().split('.');
+
+      parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+
+      return parts.join('.');
+    }
+
+    function getCleanNumber (val) {
+      return typeof (val) === 'string' ? parseFloat(val.replace(/[^\.|\d|-]+/g, ''), 10) : val;
+    }
+
+    function getFormattedNumber (val, decimals = 0, prefix = '', suffix = '') {
+      const cleanNumber = getCleanNumber(val);
+      const finalVal = isNaN(cleanNumber) ? '' : numberWithCommas(cleanNumber.toFixed(decimals));
+
+      return `${prefix}${finalVal}${suffix}`;
+    }
+
+    return {
+      roundNumber,
+      numberWithCommas,
+      getCleanNumber,
+      getFormattedNumber
+    };
+  }
+
+  momappoki.utilities = _.merge({}, momappoki.utilities, createUtils());
+  window.momappoki = momappoki;
+})(window.momappoki || {}, $, _, window);

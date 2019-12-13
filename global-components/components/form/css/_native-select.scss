@@ -1,0 +1,85 @@
+@import "global/base/css/utilities";
+
+/**
+  This is mostly so element styling can be shared across elements with different
+  class names. They might have different class names so the element name context
+  makes more sense or can be used it tightly coupled components.
+**/
+
+@mixin native-select {
+  height: rems(45);
+  background-color: $white;
+  color: $slate-5;
+  border: 1px solid $slate-3;
+  position: relative;
+
+  @media #{$large} {
+    height: rems(34);
+  }
+
+  &:after {
+    content: "\e9d6";
+    height: 100%;
+    width: rems(45);
+    padding: 0;
+    background-color: $white;
+    color: $sky-3;
+    font-family: "sf-icons";
+    border-left: 1px solid $slate-3;
+    pointer-events: none;
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    right: 0;
+    top: 0;
+    z-index: 1;
+
+    @media #{$large} {
+      width: rems(34);
+    }
+  }
+
+  select {
+    height: 100%;
+    width: 100%;
+    padding-left: rems(10);
+    color: $slate-5;
+    font-size: rems(16);
+    border: none;
+    border-radius: 0;
+    appearance: none;
+    background: transparent;
+    position: absolute;
+    left: 0;
+    top: 0;
+
+    @media #{$large} {
+      font-size: rems(14);
+    }
+
+    .touch & {
+      font-size: rems(16);
+    }
+
+    &::-ms-expand {
+      display: none;
+    }
+  }
+
+  &.disabled, &[disabled] {
+    color: $slate-3;
+    background-color: $slate-2;
+    border: 1px solid rgba($black, 0.1);
+
+    &::after {
+      color: $slate-3;
+    }
+  }
+
+  .has-error &,
+  &.has-error {
+    border-color: $error;
+  }
+
+}

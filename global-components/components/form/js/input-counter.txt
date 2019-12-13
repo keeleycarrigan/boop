@@ -1,0 +1,166 @@
+((momappoki = {}, $, _) => {
+  momappoki.components = momappoki.components || {};
+
+  const LOG = _.get(momappoki, 'utilities.logMessage', $.noop);
+  const $BODY = $('body');
+  const COMPONENT = 'mod_input_counter';
+  const EVENT_NAMESPACE = 'inputCounter';
+  const INPUT_DATA = 'data-input-counter';
+  const OPTIONS_DATA = 'input-counter-opts';
+  const DEFAULTS = {
+    axSizes: {
+      small: {
+        90: 'polite',
+        100: 'assertive'
+      },
+      large: {
+        80: 'polite',
+        90: 'polite',
+        95: 'assertive',
+        100: 'assertive'
+      }
+    },
+    axCounterMsg: (count, max) => `${count} out of ${max} characters remaining`,
+    maxInput: 150,
+    size: 'large'
+  };
+  let watchingInputFocus = false;
+
+  function activateInputCounter (e) {
+    const $input = $(e.currentTarget);
+    let inst = null;
+
+    if ($input.length) {
+      inst = $.data($input[0], COMPONENT);
+
+      inst && inst.activate();
+    }
+  }
+  function toggleInputFocus (watching = true) {
+    watchingInputFocus = watching;
+
+    $BODY[watching ? 'on' : 'off'](`focus.${EVENT_NAMESPACE}`, `[${INPUT_DATA}]`, activateInputCounter);
+  }
+
+  class InputCounter {
+    constructor ($el, options = {}) {
+      if (!(this instanceof InputCounter)) { return new InputCounter($el, options); }
+
+      if ($el && $el instanceof jQuery && $el.length) {
+        let inst = $.data($el[0], COMPONENT);
+
+        !watchingInputFocus && toggleInputFocus(true);
+
+        if (!inst) {
+          inst = $.data($el[0], COMPONENT, this);
+
+          this.init($el, options);
+        }
+
+        return inst;
+      }
+
+      LOG('input-counter.js:%cClass instances must be initialized with a jQuery element', 'color:red');
+    }
+
+    static getInstance ($el) {
+      if ($el && $el instanceof jQuery && $el.length) {
+        return $.data($el[0], COMPONENT);
+      }
+
+      return null;
+    }
+
+    init ($el, options) {
+      this.$el = $el;
+
+      const inputID = this.$el.attr('id') || this.$el.attr('name');
+      const dataOpts = this.$el.data(OPTIONS_DATA) || {};
+
+      if (typeof (inputID) !== 'undefined') {
+        this.updateOptions($.extend(true, {}, DEFAULTS, options, dataOpts))
+        this.$el.attr(INPUT_DATA, 'initialized');
+        this.$counterStatus = $(`[data-input-counter-status="${inputID}"]`);
+        this.$counterTotal = this.$counterStatus.find('[data-input-counter-total]');
+        this.$counterDesc = this.$counterStatus.find('[data-input-counter-msg="description"]');
+        this.$counterMsgPolite = this.$counterStatus.find('[data-input-counter-msg="polite"]');
+        this.$counterMsgAssertive = this.$counterStatus.find('[data-input-counter-msg="assertive"]');
+        this.stopInput = false;
+
+        this.setCount();
+      } else {
+        LOG('input-counter.js:%cInput must have an [id] or [name] that matches the counter total attached to it.', 'color:red');
+      }
+    }
+
+    activate () {
+      this.$el
+        .on(`blur.${EVENT_NAMESPACE}`, this.deactivate.bind(this))
+        .on(`keyup.${EVENT_NAMESPACE}`, this.setCount.bind(this));
+
+      watchingInputFocus && toggleInputFocus(false);
+    }
+
+    deactivate () {
+      this.$el
+        .off(`blur.${EVENT_NAMESPACE}`)
+        .off(`keyup.${EVENT_NAMESPACE}`);
+
+      !watchingInputFocus && toggleInputFocus(true);
+    }
+
+    sendAxCountMsg (msgType, msg) {
+      if (msgType === 'polite') {
+        this.$counterMsgPolite.text(msg);
+        this.$counterMsgAssertive.text('');
+      } else if (msgType === 'assertive') {
+        this.$counterMsgAssertive.text(msg);
+        this.$counterMsgPolite.text('');
+      }
+    }
+
+    setCount () {
+      const liveTotal = this.$el.val().length;
+      const inputLeft = this.maxInput - liveTotal;
+      const percent = Math.floor(liveTotal / this.maxInput * 100);
+      const percentList = Object.keys(this.axMessaging).map(num => parseInt(num, 10)); // [80, 90, 95, 100]
+      let axMsgType = null;
+
+      if (this.stopInput && percent < 100) {
+        this.stopInput = false;
+      }
+
+      if (percentList.indexOf(percent) > -1) {
+        axMsgType = this.axMessaging[percent];
+      } else {
+        const percentIdx = [...percentList, percent].sort((a, b) => a - b).indexOf(percent) - 1;
+
+        if (percentIdx > -1) {
+          axMsgType = this.axMessaging[percentList[percentIdx]];
+        }
+      }
+
+      if (percent <= 100 && !this.stopInput) {
+        const counterMsg = this.options.axCounterMsg(inputLeft, this.maxInput);
+
+        axMsgType && this.sendAxCountMsg(axMsgType, counterMsg);
+
+        this.$counterTotal.text(liveTotal);
+        this.$counterDesc.text(counterMsg);
+        this.stopInput = percent === 100;
+      } else {
+        this.sendAxCountMsg('assertive', 'Max characters reached.');
+      }
+    }
+
+    // Useful for safely updating instance options after component instantiation.
+    updateOptions (options = {}) {
+      this.options = $.extend(true, {}, this.options || {}, options);
+
+      this.maxInput = this.$el.attr('maxlength') || this.options.maxInput;
+      this.axMessaging = this.options.axSizes[this.options.size];
+    }
+  }
+
+  momappoki.components.InputCounter = InputCounter;
+})(window.momappoki || {}, jQuery, _);

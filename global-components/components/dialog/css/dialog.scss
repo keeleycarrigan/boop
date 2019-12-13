@@ -1,0 +1,178 @@
+@import "global/base/css/utilities";
+
+
+.dialog-active {
+  overflow: hidden;
+}
+
+.momappoki-dialog-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background: rgba($black, 0.7);
+  overflow-y: auto;
+  width: 100%;
+  height: 100%;
+  @include fadeTransition($activeClass: "show");
+
+  &.small {
+    padding-left: rems(10);
+    padding-right: rems(10);
+  }
+
+  &.medium,
+  &.large {
+    @media #{$small-only} {
+      opacity: 1;
+      transform: translateY(100%);
+      transition: transform 300ms linear, z-index 0ms step-end 300ms, visibility 0ms step-end 300ms;
+
+      &.show {
+        z-index: 9000;
+        transition: transform 300ms linear, top 0ms linear, z-index 0ms linear;
+        transform: translateY(0);
+      }
+    }
+
+    @media #{$medium} {
+      padding-left: rems(10);
+      padding-right: rems(10);
+    }
+  }
+
+  &.large {
+    @media #{$medium} {
+      justify-content: flex-start;
+    }
+  }
+}
+
+.momappoki-dialog {
+  height: 100%;
+  width: 100%;
+  background-color: $white;
+  position: relative;
+
+  @media #{$medium} {
+    height: auto;
+    max-width: rems(748);
+  }
+
+  .small & {
+    height: auto;
+    width: calc(100% - #{rems(20)});
+
+    @media #{$medium} {
+      max-width: rems(364);
+    }
+  }
+
+  .medium & {
+    @media #{$medium} {
+      max-width: rems(556);
+    }
+  }
+
+  .large & {
+    @media #{$medium} {
+      max-width: rems(748);
+      margin: rems(120) auto rems(60) auto;
+      position: relative;
+      left: 0;
+      top: 0;
+      transform: none;
+    }
+  }
+}
+
+.momappoki-dialog-content {
+  height: 100%;
+  padding: rems((46, 10, 20, 10));
+  overflow-y: auto;
+
+  @media #{$medium} {
+    padding: rems(30);
+  }
+
+  .small & {
+    @media #{$small-only} {
+      padding: rems((20, 10));
+    }
+  }
+
+  /**
+    It's expected that the first child in dialog content will
+    be a row followed by at least a 12 column container.
+  **/
+  > .row {
+    width: auto;
+    margin-left: -10px;
+    margin-right: -10px;
+  }
+}
+
+.momappoki-dialog-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  position: absolute;
+  z-index: 5;
+
+  .small & {
+    top: rems(20);
+    right: rems(20);
+  }
+
+  .medium &,
+  .large & {
+    @media #{$small-only} {
+      height: rems(36);
+      width: 100%;
+      padding-left: rems(20);
+      padding-right: rems(20);
+      background-color: $light-gray;
+      top: 0;
+      right: 0;
+
+      &::after {
+        content: "";
+        height: 2px;
+        width: 100%;
+        background-color: rgba($black, 0.1);
+        position: absolute;
+        left: 0;
+        top: 100%;
+      }
+    }
+  }
+
+  @media #{$medium} {
+    height: auto;
+    width: auto;
+    padding-left: 0;
+    padding-right: 0;
+    background-color: transparent;
+    top: rems(20);
+    right: rems(20);
+
+    &::after {
+      display: none;
+    }
+  }
+
+}
+
+.momappoki-dialog-close {
+  background-color: transparent;
+  color: $sky-3;
+  display: block;
+  border: none;
+
+  &:hover {
+    text-decoration: none;
+  }
+}

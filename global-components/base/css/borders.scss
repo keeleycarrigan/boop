@@ -1,0 +1,109 @@
+@import "utilities";
+
+@mixin borders (
+  $main-bps: $breakpoints,
+  $include-bps: ("sm", "lg"),
+  $bp-ranges: ("min", "only", "max"),
+  $border-sizes: (1)
+) {
+
+  $bp-lvls: length($include-bps);
+
+  @for $i from 1 through $bp-lvls {
+    $bp-def: map-get($main-bps, nth($include-bps, $i));
+    $size: nth($include-bps, $i);
+    $max-ranges: length($bp-ranges);
+
+    @for $j from 1 through $max-ranges {
+      $range: nth($bp-ranges, $j);
+      $range-name: $size;
+
+      @if ($range != "min") {
+        $range-name: #{$range-name}-#{$range};
+      }
+
+      @if (output-range($i, $bp-lvls, $range)) {
+        @if (map-has-key($bp-def, $range)) {
+          @media #{map-get($bp-def, $range)} {
+            .border-0-#{$range-name} {
+              border: none;
+            }
+
+            .border-r0-#{$range-name} {
+              border-right: none;
+            }
+
+            .border-l0-#{$range-name} {
+              border-left: none;
+            }
+
+            .border-t0-#{$range-name} {
+              border-top: none;
+            }
+
+            .border-b0-#{$range-name} {
+              border-bottom: none;
+            }
+
+            @for $k from 1 through length($border-sizes) {
+              $size: nth($border-sizes, $k);
+
+              .border-#{$size}-#{$range-name} {
+                border-style: solid;
+                border-width: $size * 1px;
+              }
+
+              .border-r#{$size}-#{$range-name} {
+                border-right-style: solid;
+                border-right-width: $size * 1px;
+              }
+
+              .border-l#{$size}-#{$range-name} {
+                border-left-style: solid;
+                border-left-width: $size * 1px;
+              }
+
+              .border-t#{$size}-#{$range-name} {
+                border-top-style: solid;
+                border-top-width: $size * 1px;
+              }
+
+              .border-b#{$size}-#{$range-name} {
+                border-bottom-style: solid;
+                border-bottom-width: $size * 1px;
+              }
+
+            }
+
+          }
+        }
+      }
+    }
+  }
+}
+
+@include borders(
+  $include-bps: ("sm", "md", "lg", "xl"),
+  $bp-ranges: ("min"),
+  $border-sizes: (1, 2, 4)
+);
+
+.border-segue {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+
+  &::before,
+  &::after {
+    content: "";
+    height: 1px;
+    background-color: currentColor;
+    flex: 1;
+  }
+}
+
+.border-segue-txt {
+  padding-left: rems(10);
+  padding-right: rems(10);
+}

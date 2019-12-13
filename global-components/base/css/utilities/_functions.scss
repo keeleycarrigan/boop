@@ -1,0 +1,71 @@
+@import 'colors.scss';
+
+@function lower-bound($range) {
+  @if length($range) <= 0{
+    @return 0;
+  }
+  @return nth($range,1);
+}
+@function upper-bound($range) {
+  @if length($range) < 2{
+    @return 999999999999;
+  }
+  @return nth($range, 2);
+}
+
+@function grid-calc($colNumber, $totalColumns) {
+  @return percentage(($colNumber / $totalColumns));
+}
+
+// ==========================================================================
+// Rem Calc
+// Add support for passing in #HEX codes and $variables -- we want them to remain as-is (strings) and not converted
+// ==========================================================================
+@function rems($values, $delim: space) {
+  $max: length($values);
+  $remVals: null;
+  $base-px: 10 !default;
+
+  @for $i from 1 through $max {
+    $val: nth($values, $i);
+
+    @if type-of($val) == "number" and unitless($val) {
+      $remVals: append($remVals, #{$val / $base-px}rem, $delim);
+    } @else {
+      $remVals: append($remVals, $val, $delim);
+    }
+  }
+
+  @return $remVals;
+}
+
+// ==========================================================================
+// Colors
+// Returns color value from the $ux-colors map
+// Examples:
+// Get a color:  color('plum');
+// Get a color nested under accounts:  color('accounts','ira');
+// Get a color nested under accessibility: color('accessible','ira');
+// Darken a color by referencing the map directly darken(rgba(map-get($ux-colors,'plum'),1), 20%);
+// Lighten a color using the color function: color('plum', null, 40%);
+// Darken a color using the color function: color('plum',null, 0, 60%);
+// Make your own variable and cast as a color: $plum: rgba(map-get($ux-colors, 'plum'), 1);
+// ==========================================================================
+@function color($color-name, $color-variant:null, $lighten:0, $darken:0) {
+  $color: #FFF;
+  @if ($color-variant != null) {
+    $color: map-get(map-get($ux-colors, $color-name), $color-variant);
+  }
+  @else {
+    $color: map-get($ux-colors, $color-name);
+  }
+  @if ($lighten != 0) {
+    @return lighten(rgba($color,1),$lighten);
+  }
+  @else if ($darken != 0) {
+    @return darken(rgba($color,1),$darken);
+  }
+  @else {
+    @return #{$color};
+  }
+}

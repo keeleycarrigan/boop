@@ -1,0 +1,187 @@
+// Preferably use the "rems" function directly.
+@mixin rem-calc($property, $values...) {
+  #{$property}: rems(($values));
+}
+
+// ==========================================================================
+// Clearfix
+// ==========================================================================
+@mixin clearfix {
+  &::before,
+  &::after {
+    display: table;
+    content: '';
+  }
+
+  &::after {
+    clear: both;
+  }
+}
+
+// ==========================================================================
+// Styleguide Hard Shadow
+// ==========================================================================
+@mixin hardShadow ($position: "bottom", $size: 4) {
+  $inset: "";
+  @if ($position == "top") {
+    $inset: "inset";
+  }
+
+  box-shadow: #{$inset} 0 #{$size * 1px} 0 rgba($black, 0.15);
+}
+
+@mixin hideVisually {
+  margin: -1px;
+  border: 0;
+  padding: 0;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+}
+
+// ==========================================================================
+// Include on an element to create a fade in and out transition when
+// an active class is applied.
+// ==========================================================================
+@mixin fadeTransition ($duration: 300, $activeClass: "active", $activeZ: 1000) {
+  visibility: hidden;
+  opacity: 0;
+  z-index: -1;
+  transition: opacity #{$duration}ms linear, z-index 0ms step-end #{$duration}ms, visibility 0ms step-end #{$duration}ms;
+
+  &.#{$activeClass} {
+    visibility: visible;
+    opacity: 1;
+    z-index: $activeZ;
+    transition: opacity #{$duration}ms linear, z-index 0ms linear, visibility 0ms linear;
+  }
+}
+
+// ==========================================================================
+// Custom Arrows
+// ---------------
+// Makes a triangle pointing in the direction specified
+// The length of the "pointer" is set with $length
+// The .08 is necessary because of truncating on sqrt()
+//
+// Variables
+// Direction (string) : up, right, down, left
+// Color (string)     : any valid color value (hex, named, etc)
+// Size (int)         : Length of the base of the triangle in pixels
+// Length (float)     : Amount to stretch the pointer by.
+//                      Must be greater than 0
+// ==========================================================================
+@mixin custom-arrow($direction, $color, $size, $length) {
+  display: block;
+  width: 0;
+  height: 0;
+  $square-of-three: 1.7321;
+  $leftovers: 0.08;
+  $height: round($square-of-three / 2 * $size * ($length + $leftovers));
+
+  @if $direction == "up" {
+    border-top: 0;
+    border-right: $size / 2 solid transparent;
+    border-bottom: $height solid $color;
+    border-left: $size / 2 solid transparent;
+  }
+
+  @else if $direction == "right" {
+    border-top: $size / 2 solid transparent;
+    border-right: 0;
+    border-bottom: $size / 2 solid transparent;
+    border-left: $height solid $color;
+  }
+
+  @else if $direction == "down" {
+    border-top: $height solid $color;
+    border-right: $size / 2 solid transparent;
+    border-bottom: 0;
+    border-left: $size / 2 solid transparent;
+  }
+
+  @else if $direction == "left" {
+    border-top: $size / 2 solid transparent;
+    border-right: $height solid $color;
+    border-bottom: $size / 2 solid transparent;
+    border-left: 0;
+  }
+}
+// ==========================================================================
+// Arrows
+// ---------------
+// Simple mixin to generate arrows (can be attached to :before/:after)
+// The existing method asks for size as the width of a border, not the
+// size of a side of the triangle. That's dumb, but I'm respecting it anyway
+// ==========================================================================
+@mixin arrow($direction, $color, $size) {
+  @include custom-arrow($direction, $color, $size * 2, 0.5);
+}
+// ==========================================================================
+// Include Helvetica fonts  (Regular, Medium, Light, Bold)
+// ==========================================================================
+@mixin HelveticaNeue($property, $important: "") {
+  font-family: "HelveticaNeue-#{$property}", "HelveticaNeue #{$property}", "Helvetica Neue", "Helvetica", Arial, "Lucida Grande", sans-serif #{$important};
+}
+// ==========================================================================
+// Include Standard momappoki Font
+// ==========================================================================
+@mixin MomaFont($important: "") {
+  font-family: "Lato", "HelveticaNeue-Regular", "HelveticaNeue Regular", "Helvetica Neue", "Helvetica", Arial, "Lucida Grande", sans-serif #{$important};
+}
+// ==========================================================================
+// Font Mixin
+// ==========================================================================
+// Mixin for fonts in the /resources/components/fonts directory
+// $font: Font Name (i.e. "Lato")
+// $dir: Directory where font is located inside the /fonts directory (i.e. "lato")
+// $name: Name of the actual font file (without suffix) (i.e. "Lato-Regular")
+// $weight: (300,400,700,900,etc)
+// $sytle: (normal|italic)
+// $id: SVG id
+// $ext: Extensions to include (defaults to all extensions)
+@mixin momappoki-font-face($font, $dir, $file, $weight:normal, $style:normal, $id:"web", $ext:('woff','ttf','eot','svg','woff2')) {
+  $eotfix: quote("#{$dir}/eot/#{$file}.eot?#iefix");
+  $eot: quote("#{$dir}/eot/#{$file}.eot");
+  $woff: quote("#{$dir}/woff/#{$file}.woff");
+  $woff2: quote("#{$dir}/woff2/#{$file}.woff2");
+  $ttf: quote("#{$dir}/ttf/#{$file}.ttf");
+  $svg: quote("#{$dir}/svg/#{$file}.svg##{$id}");
+  // base font-face styles
+  $base-style: ( ('font-family', quote($font)), ('font-style', $style), ('font-weight', $weight) );
+  // sass list holds all other font file sources
+  $srcs: ();
+  // sass string of sources to be comma-delimited
+  $src: '';
+  @if (index($ext,'eot') != null) {
+    $base-style: append($base-style, ('src', url($eot) format("eot")));
+    $srcs: append($srcs, url($eotfix) format("embedded-opentype"));
+  }
+  @if (index($ext,'woff2') != null) {
+    $srcs: append($srcs, url($woff2) format("woff2"));
+  }
+  @if (index($ext,'woff') != null) {
+    $srcs: append($srcs, url($woff) format("woff"));
+  }
+  @if (index($ext,'ttf') != null) {
+    $srcs: append($srcs, url($ttf) format("truetype"));
+  }
+  @if (index($ext,'svg') != null) {
+    $srcs: append($srcs, url($svg) format("svg"));
+  }
+  @each $item in $srcs {
+    $i: index($srcs, $item);
+    $sep: '';
+    @if ($i < length($srcs)) {
+      $sep: ',';
+    }
+    $src: $src + $item + $sep;
+  }
+  @font-face {
+    @each $prop, $setting in $base-style{
+      #{$prop}: $setting;
+    }
+    src: unquote($src);
+  }
+}

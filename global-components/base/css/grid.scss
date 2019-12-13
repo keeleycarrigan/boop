@@ -1,0 +1,61 @@
+@import "utilities";
+
+%row {
+  @include base-row;
+
+  .row,
+  .flex-row {
+    max-width: none;
+    width: auto;
+    margin-left: -($column-gutter / 2) * 1px;
+    margin-right: -($column-gutter / 2) * 1px;
+
+    &.collapse {
+      margin-left: 0;
+      margin-right: 0;
+    }
+  }
+
+  &.collapse {
+    > [class*="-col"] {
+      padding-left: 0;
+      padding-right: 0;
+    }
+  }
+}
+
+.row {
+  @extend %row;
+  @include clearfix();
+}
+
+.flex {
+  display: flex;
+
+  &.wrap {
+    flex-wrap: wrap;
+  }
+}
+
+.flex-row {
+  @extend %row;
+  display: flex;
+  flex-wrap: wrap;
+
+  &.no-wrap {
+    flex-wrap: nowrap;
+  }
+}
+
+.flex-content-container-row {
+  height: 100%;
+  width: 100%;
+  display: flex;
+}
+
+.flex-content-container-column {
+  @extend .flex-content-container-row;
+  flex-direction: column;
+}
+
+@include grid-levels($include-bps: ("sm", "md", "lg", "xl"));

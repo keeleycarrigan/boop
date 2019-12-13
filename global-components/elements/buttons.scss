@@ -1,0 +1,268 @@
+@import "global/base/css/utilities";
+
+// Based on styles from:
+// DESIGN STYLEGUIDE:
+// http://ux.int.momappoki.com/design/styles/buttons/
+
+@mixin txt-btn {
+  padding-left: 0;
+  padding-right: 0;
+  background-color: transparent;
+  color: $sky-3;
+  border: none;
+  transition: color 150ms linear;
+  &.disabled,
+  &[disabled] {
+    background-color: transparent;
+    border: none;
+  }
+
+  .no-touch & {
+    &:hover {
+      color: lighten($sky-3, 5%);
+      background-color: transparent;
+    }
+  }
+
+}
+/**
+  REMOVE .CTA-BUTTON WHEN TUX UPDATES THE LOGIN BUTTON IN THE DRAWER!!
+**/
+.cta-button,
+.momappoki-btn {
+  @include rem-calc(font-size, 16);
+  @include rem-calc(line-height, 23);
+  @include rem-calc(padding, 10, 20);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-weight: 700;
+  text-decoration: none;
+  text-align: center;
+  border: none;
+  border-radius: 0;
+  color: $white;
+  letter-spacing: 0.5px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: antialiased;
+  background-color: $sky-3;
+  border: 1px solid rgba($black, .3);
+  backface-visibility: hidden;
+  transition: background-color 50ms linear;
+
+  @media #{$large} {
+    @include rem-calc(font-size, 14);
+    @include rem-calc(line-height, 22);
+    @include rem-calc(padding-top, 5);
+    @include rem-calc(padding-bottom, 5);
+  }
+
+  .no-touch & {
+    &:hover {
+      background-color: mix($black, $sky-3, 10%);
+      color: $white;
+      text-decoration: none;
+    }
+  }
+
+  &[role="button"] {
+    cursor: pointer;
+  }
+
+  &.max {
+    @media #{$large} {
+      @include rem-calc(font-size, 16);
+      @include rem-calc(line-height, 25);
+      @include rem-calc(padding, 10, 20);
+    }
+  }
+
+  &.secondary {
+    color: $sky-3;
+    background-color: $patina-2;
+    border: 1px solid rgba($sky-3, 0.3);
+
+    .no-touch & {
+      &:hover {
+        background-color: mix($black, $patina-2, 5%);
+        color: $sky-3;
+      }
+    }
+
+    &:visited {
+      color: $sky-3;
+    }
+  }
+
+  &.destructive {
+    color: $white;
+    background-color: $error;
+    border: 1px solid rgba($black, 0.20);
+
+    .no-touch & {
+      &:hover {
+        background-color: mix($black, $error, 10%);
+      }
+    }
+  }
+  /**
+    REMOVE .ALT-1 WHEN TUX UPDATES THE LOGIN BUTTON IN THE DRAWER!!
+  **/
+  &.alt-1,
+  &.login {
+    color: $white;
+    background-color: $toaster;
+    border: 1px solid rgba($black, .3);
+
+    .no-touch & {
+      &:hover {
+          background-color: mix($black, $toaster, 5%);
+      }
+    }
+
+    &:visited {
+      color: $white;
+    }
+  }
+
+  &.white {
+    background-color: $white;
+    color: $sky-3;
+
+    .no-touch & {
+      &:hover {
+        background-color: mix($black, $white, 5%);
+        color: $sky-3;
+      }
+    }
+  }
+
+  &.no-outline {
+    border: none;
+  }
+
+  &.outline,
+  &.outline.blue {
+    background-color: transparent;
+    color: $sky-3;
+    border: 1px solid currentColor;
+
+    .no-touch & {
+      &:hover {
+        color: $sky-3;
+        background-color: rgba($black, 0.05);
+      }
+    }
+
+    &:visited {
+      color: $sky-3;
+    }
+
+    &.white {
+      color: $white;
+
+      .no-touch & {
+        &:hover {
+          color: $white;
+          background-color: rgba($black, 0.10);
+        }
+      }
+
+      &:visited {
+        color: $white;
+      }
+    }
+
+    &.disabled, &[disabled] {
+      opacity: 0.5;
+    }
+  }
+
+  &.disabled, &[disabled] {
+    cursor: default;
+    pointer-events: none;
+
+    &:not(.outline) {
+      color: $slate-3;
+      background-color: $slate-2;
+      border: 1px solid rgba($black, 0.1);
+      cursor: default;
+      pointer-events: none;
+
+      .no-touch & {
+        &:hover {
+          background-color: inherit;
+        }
+      }
+
+      &:visited {
+        color: $slate-3;
+      }
+    }
+  }
+
+  &.txt-btn {
+    @include txt-btn();
+  }
+
+  &.txt-btn-md {
+    @media #{$large} {
+      @include txt-btn();
+    }
+  }
+
+  &.expand-sm {
+    width: 100%;
+    flex: 0 0 auto;
+  }
+
+  &.expand-sm-only {
+    @media #{$small-only} {
+      width: 100%;
+      flex: 0 0 auto;
+    }
+  }
+
+  &.expand-md {
+    @media #{$medium} {
+      width: 100%;
+      flex: 0 0 auto;
+    }
+  }
+
+  &.expand-md-down {
+    @media #{$medium-max} {
+      width: 100%;
+      flex: 0 0 auto;
+    }
+  }
+
+  &.expand-lg {
+    @media #{$large} {
+      width: 100%;
+      flex: 0 0 auto;
+    }
+  }
+
+  &.expand-lg-down {
+    @media #{$large-max} {
+      width: 100%;
+      flex: 0 0 auto;
+    }
+  }
+
+  [class*="momacon-"] {
+    font-size: rems(24);
+
+    @media #{$large} {
+      font-size: rems(20);
+    }
+  }
+}
+
+.momappoki-btn-group {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+}

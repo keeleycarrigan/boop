@@ -1,0 +1,116 @@
+((momappoki = {}, _) => {
+  momappoki.utilities = momappoki.utilities || {};
+
+  momappoki.utilities.DynamicFields = class DynamicFields {
+    constructor ($el, data, fieldAttr = 'data-momappoki-field') {
+      if (!(this instanceof DynamicFields)) { return new DynamicFields($el, data, fieldAttr); }
+
+      /**
+        Passing a parent element of the fields allows you to have multiple instances
+        of the utility running that affect different parts of the page.
+      **/
+
+      this.$el = $el && $el instanceof jQuery ? $el : $($el);
+      this.data = data;
+      this.defaultData = _.cloneDeep(data);
+      this.fieldAttr = fieldAttr;
+      this.$fields = this.$el.find(`[${fieldAttr}]`);
+
+      this.populate(this.data);
+
+      return this;
+    }
+
+    /**
+      'val' is expected to be an array or boolean.
+    **/
+    updateCheckbox ($input, val = []) {
+      if (typeof (val) === 'boolean') {
+        $input.attr('checked', val);
+      } else {
+        $input
+          .attr('checked', false)
+          .filter((idx, el) => val.indexOf($(el).attr('value')) > -1)
+          .attr('checked', true);
+      }
+    }
+
+    /**
+      'val' is expected to be a string or boolean.
+    **/
+    updateRadio ($input, val = false) {
+      if (typeof (val) === 'boolean') {
+        $input.attr('checked', val);
+      } else {
+        $input
+          .attr('checked', false)
+          .filter((idx, el) => $(el).attr('value') === `${val}`)
+          .attr('checked', true);
+      }
+    }
+
+    updateSelect ($input, val = '') {
+      $input
+        .find('option')
+        .attr('selected', false)
+        .filter((idx, el) => $(el).attr('value') === `${val}`)
+        .attr('selected', true);
+    }
+
+    _updateInput (val, key) {
+      const $input = this.$el.find(`[name="${key}"]`);
+      const inputType = $input.attr('type');
+
+      if ($input.length && $input.is(`[${this.fieldAttr}]`)) {
+        switch (inputType) {
+          case 'checkbox':
+            this.updateCheckbox($input, val);
+            break;
+          case 'radio':
+            this.updateRadio($input, val);
+            break;
+          case 'select':
+            this.updateSelect($input, val);
+            break;
+          default:
+            $input.val(val);
+        }
+      }
+    }
+
+    update (data, updateDefault = false, overwrite = false) {
+      const updated = overwrite ? data : $.extend({}, this.data, data);
+
+      this.data = updated;
+
+      if (updateDefault) {
+        this.defaultData = _.cloneDeep(updated);
+      }
+
+      this.populate(this.data);
+    }
+
+    reset () {
+      this.data = _.cloneDeep(this.defaultData);
+      this.populate(this.data);
+    }
+
+    populate (data = this.data) {
+      _.forEach(data, (val, key) => {
+        this.$fields
+          .filter(`[${this.fieldAttr}=${key}]`)
+          .each((idx, el) => {
+            const $el = $(el);
+
+            if ($el.is(':input')) {
+              this._updateInput(val, key);
+            } else {
+              $el.text(val);
+            }
+          });
+      });
+    }
+  };
+
+  window.momappoki = momappoki;
+})(window.momappoki, _)

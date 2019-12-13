@@ -1,0 +1,41 @@
+@import "global/base/css/utilities";
+
+.segmented-ctrl-nav {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.segmented-ctrl-nav-items {
+  display: flex;
+  border: 1px solid $slate-3;
+  border-radius: rems(17);
+  height: rems(34);
+  overflow: hidden;
+
+  .segmented-ctrl-alt & {
+    border-radius: 0;
+    height: auto;
+  }
+}
+
+.segmented-ctrl-nav-panels {
+  width: 100%;
+}
+
+.segmented-ctrl-nav-content {
+  display: none;
+
+  &.active-item {
+    display: block;
+  }
+}
+
+.segmented-ctrl-alt {
+  align-items: flex-start;
+
+  .segmented-ctrl-trigger {
+    padding: rems(5) rems(10);
+    line-height: 1.5;
+  }
+}

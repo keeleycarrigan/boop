@@ -1,0 +1,95 @@
+@import "global/base/css/utilities";
+
+@mixin accordion-content {
+  padding: rems(20);
+  background-color: $white;
+  display: none;
+  position: relative;
+
+  // Just in case an accordion isn't a child of another row.
+  > .row {
+    max-width: none;
+    width: auto;
+    margin-left: -10px;
+    margin-right: -10px;
+  }
+
+  &.active-item {
+    @include hardShadow($position: "top");
+    border-top: 1px solid $slate-3;
+  }
+}
+
+@mixin accordion-trigger {
+  height: rems(45);
+  width: 100%;
+  padding-left: rems(36);
+  padding-right: rems(20);
+  background-color: $patina-2;
+  color: $sky-3;
+  text-align: left;
+  font-weight: 700;
+  line-height: rems(45);
+  font-size: rems(16);
+  border-top: 1px solid $slate-3;
+  border-right: 0;
+  border-bottom: 0;
+  border-left: 0;
+  border-radius: 0;
+  outline-offset: rems(-5);
+  cursor: pointer;
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  position: relative;
+
+  @media #{$large} {
+    height: rems(34);
+    line-height: rems(34);
+  }
+
+  .no-touch & {
+    &:hover {
+      color: $sky-3;
+      background-color: darken($patina-2, 5%);
+    }
+  }
+
+  .gray & {
+    background-color: $light-gray;
+
+    .no-touch & {
+      &:hover {
+        background-color: darken($light-gray, 5%);
+      }
+    }
+  }
+
+  &.disabled {
+    color: $slate-3;
+    cursor: default;
+    pointer-events: none;
+  }
+
+  &.active-item {
+    z-index: 1;
+
+    &::before {
+      transform: translateY(-50%) rotate(90deg);
+    }
+  }
+
+  &::before {
+    content: "\e90e";
+    line-height: 1;
+    font-size: rems(12);
+    font-family: "sf-icons";
+    display: block;
+    position: absolute;
+    left: rems(20);
+    top: 50%;
+    transform: translateY(-50%);
+    transition: transform 200ms linear;
+  }
+}

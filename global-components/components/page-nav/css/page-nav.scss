@@ -1,0 +1,166 @@
+@import "global/base/css/utilities";
+
+.page-nav {
+  width: 100%;
+  background-color: $white;
+  z-index: 10;
+  transition: background-color 300ms linear;
+
+  @media #{$medium-max} {
+    border-bottom: 1px solid $slate-2;
+  }
+
+  + .placeholder {
+    display: none;
+  }
+
+  [class*="hide-inactive"],
+  [class*="hide-active"]{
+    opacity: 0;
+  }
+
+  &.initialized {
+    [class*="hide-inactive"],
+    [class*="hide-active"] {
+      opacity: 1;
+    }
+  }
+
+  &.active {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 2;
+
+    @media #{$medium} {
+      .hide-active-md-up {
+        display: none;
+      }
+    }
+
+    @media #{$medium-max} {
+      .hide-active-md-down {
+        display: none;
+      }
+    }
+
+    @media #{$large} {
+      @include hardShadow();
+
+      .hide-active-lg-up {
+        display: none;
+      }
+    }
+
+    @media #{$large-max} {
+      .hide-active-lg-down {
+        display: none;
+      }
+    }
+
+    + .placeholder{
+      display: block;
+    }
+  }
+
+  &.inactive {
+    @media #{$medium} {
+      .hide-inactive-md-up {
+        display: none;
+      }
+    }
+
+    @media #{$medium-max} {
+      .hide-inactive-md-down {
+        display: none;
+      }
+    }
+
+    @media #{$large} {
+      .hide-inactive-lg-up {
+        display: none;
+      }
+    }
+
+    @media #{$large-max} {
+      .hide-inactive-lg-down {
+        display: none;
+      }
+    }
+  }
+}
+
+.page-nav-row {
+  @include base-row;
+  height: rems(60);
+  padding-left: rems(10);
+  padding-right: rems(10);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+
+  @media #{$medium} {
+    justify-content: center;
+  }
+
+  @media #{$large} {
+    justify-content: space-between;
+  }
+}
+
+.page-nav-link-list {
+  margin: 0 rems(-10);
+  display: none;
+
+  @media #{$large} {
+    display: flex;
+    align-items: center;
+  }
+
+  li {
+    padding: 0 rems(10);
+  }
+}
+
+.page-nav-link {
+  padding-top: rems(18);
+  padding-bottom: rems(18);
+  font-size: rems(16);
+  line-height: 1.5;
+  display: block;
+  position: relative;
+
+  &::after {
+    content: '';
+    height: rems(4);
+    width: 100%;
+    background-color: $sky-3;
+    opacity: 0;
+    position: absolute;
+    left: 0;
+    bottom: rems(10);
+    transition: opacity 200ms linear;
+    transition-delay: 250ms;
+  }
+
+  &.active::after {
+    opacity: 1;
+  }
+}
+
+.page-nav-btn {
+  height: rems(45);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  @media #{$medium} {
+    height: rems(34);
+  }
+}
+
+.page-nav-btn-label {
+  display: flex;
+  align-items: center;
+}

@@ -1,0 +1,35 @@
+@import "global/base/css/utilities";
+
+.reveal-window {
+  max-height: rems(250);
+  background-color: $white;
+  border: 1px solid $slate-3;
+  overflow: hidden;
+  transition: max-height 400ms ease-out;
+
+  @media #{$large} {
+    max-height: rems(350);
+  }
+}
+
+.reveal-content {
+  padding: rems(10);
+}
+
+.reveal-trigger {
+  height: rems(34);
+  width: rems(68);
+  margin: -1px auto 0 auto;
+  background-color: $white;
+  border: 1px solid $slate-3;
+  border-top: none;
+  border-radius: 0 0 rems(34) rems(34);
+  color: $sky-2;
+  display: block;
+
+  .momacon-glyph-chevron-down {
+    margin-top: rems(-10);
+    font-size: rems(30);
+    display: inline-block;
+  }
+}

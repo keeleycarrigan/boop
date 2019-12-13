@@ -1,0 +1,96 @@
+@import "global/base/css/utilities";
+
+.info-bar {
+  @include MomaFont();
+  height: rems(40);
+  width: 100%;
+  background-color: color('page-gray');
+  color: $slate-4;
+  font-size: rems(14);
+  line-height: rems(40);
+  display: none;
+  position: relative;
+  transition: all 150ms linear;
+  z-index: 5;
+
+  + .placeholder {
+    display: none;
+    clear: both;
+  }
+
+  &.active {
+    background-color: $plum;
+    color: $white;
+    z-index: 10;
+
+    + .placeholder {
+      display: block;
+    }
+
+    [href*='#term-'] {
+      color: $white;
+    }
+
+    .bullets {
+      a:not([href*='#term-']) {
+        color: $sky-1;
+
+        &:hover {
+          color: $patina-1;
+        }
+      }
+    }
+  }
+
+  @media #{$large} {
+    display: flex;
+    flex-direction: row;
+  }
+
+  .long-title {
+    display: none;
+
+    @media #{$xlarge} {
+      display: inline-block;
+    }
+  }
+
+  .short-title {
+    display: inline-block;
+
+    @media #{$xlarge} {
+      display: none;
+    }
+  }
+
+  [class*="icon-"] {
+    margin: 0 rems(5);
+  }
+
+  [class*="icon-car"] {
+    margin: 0;
+    color: $slate-3;
+    font-size: rems(12);
+  }
+
+  /* reduce text spacing so that CWT doesn't wrap when resizing window near 771px breakpoint */
+  [data-id=bank-cwt] {
+    letter-spacing: -.02rem;
+  }
+
+  .bullets {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+
+    a {
+      text-decoration: none;
+    }
+  }
+
+  .bullet::before {
+    padding: 0 rems(4);
+    content: "\2022";
+  }
+}

@@ -1,0 +1,235 @@
+(function init (momappoki = {}, _, window) {
+  momappoki.utilities = momappoki.utilities || {};
+
+  const LOG = _.get(momappoki, 'utilities.logMessage', $.noop);
+
+  class BaseLocalData {
+    constructor (type = 'localStorage') {
+      this.storageType = type;
+    }
+
+    dataParse (dataName) {
+      return dataName && JSON.parse(window[this.storageType].getItem(dataName));
+    }
+
+    find (data, match) {
+      const localData = typeof (data) === 'string' ? this._get(data) : data;
+      const filtered = localData && _.filter(localData, match);
+      let found = null;
+
+      if (filtered && _.isArray(filtered) && filtered.length) {
+        if (filtered.length > 1) {
+          found = filtered;
+        } else {
+          found = filtered[0];
+        }
+      } else if (localData && typeof (match) === 'string' && localData[match]) {
+        found = localData[match];
+      }
+
+      if (found) {
+        LOG('local-data.js:%cItem found in Storage', 'color:green', match);
+      } else {
+        LOG('local-data.js:%cItem not found in Storage', 'color:red', match);
+      }
+      return found;
+    }
+
+    _get (dataName, key) {
+      let retrievedData;
+
+      if (typeof (dataName) === 'string') {
+        const data = this.dataParse(dataName);
+
+        retrievedData = key ? this.find(data, key) : data;
+      }
+
+      if (retrievedData) {
+        LOG('local-data.js:%cData found in Storage', 'color:green', [dataName, retrievedData]);
+      } else {
+        LOG('local-data.js:%cData not found in Storage because storage key isn\'t a string or does not exist.', 'color:red', dataName);
+      }
+
+      return retrievedData;
+    }
+
+    get (dataName, key) {
+      return this._get(dataName, key);
+    }
+
+    _put (dataName, data = {}) {
+      if (typeof (dataName) === 'string') {
+        window[this.storageType].setItem(dataName, JSON.stringify(data));
+        LOG('local-data.js:%cData overwritten in Storage', 'color:green', [dataName, data]);
+      } else {
+        LOG('local-data.js:%cData not added to Storage because storage key isn\'t a string.', 'color:red', dataName);
+      }
+
+      return dataName && this._get(dataName);
+    }
+
+    put (dataName, data) {
+      return this._put(dataName, data);
+    }
+
+    _add (dataName, data) {
+      const currentData = this._get(dataName);
+
+      if (currentData) {
+        window[this.storageType].setItem(dataName, JSON.stringify(_.merge({}, this._get(dataName), data)));
+        LOG('local-data.js:%cData added to Storage', 'color:green', data);
+      } else {
+        LOG('local-data.js:%cData not added to Storage because storage key doesn\'t exist.', 'color:red', dataName);
+      }
+
+      return dataName && this._get(dataName);
+    }
+
+    add (dataName, data) {
+      return this._add(dataName, data);
+    }
+
+    update (dataName, data) {
+      return dataName && this._add(dataName, data);
+    }
+
+    _remove (dataName, key) {
+      const storedData = this._get(dataName);
+
+      if (key) {
+        this._put(dataName, _.omit(storedData, key));
+      } else {
+        window[this.storageType].removeItem(dataName);
+      }
+
+      if (storedData) {
+        LOG('local-data.js:%cData removed in Storage', 'color:green', [dataName, this._get(dataName)]);
+      } else {
+        LOG('local-data.js:%cData not removed in Storage because storage key isn\'t a string or does not exist.', 'color:red', dataName);
+      }
+
+      return dataName && this._get(dataName);
+    }
+
+    remove (dataName, key) {
+      return this._remove(dataName, key);
+    }
+
+    parseDate (date, pretty) {
+      return pretty ? new Date(date).toString() : Date.parse(date);
+    }
+
+    _isExpired (data = {}, key) {
+      const currentDate = Date.now();
+      const expKey = key ? `${key}.` : '';
+      const expData = this.find(data, `${expKey}_expires`);
+      const expDate = expData && this.parseDate(expData);
+      let expired = false;
+
+      if (expDate && expDate <= currentDate) {
+        expired = true;
+      }
+
+      if (expired) {
+        LOG('local-data.js:%cExpired data found in Storage', 'color:green', key);
+      }
+
+      return expired;
+    }
+
+    _clearExpired (data) {
+      const isObject = _.isPlainObject(data);
+      const newObj = _.reduce(data, (obj, value, key) => {
+        if ((isObject && !this._isExpired(value)) || !isObject) {
+          obj[key] = value;
+        }
+
+        return obj;
+      }, {});
+
+      if (_.isEmpty(newObj)) {
+        LOG('local-data.js:%cExpired data cleared in Storage', 'color:green', newObj);
+      }
+
+      return newObj;
+    }
+
+    _setExpire (dataName, days = 0) {
+      const expireData = dataName && this._add(dataName, this.createExpire(days));
+
+      if (expireData) {
+        LOG('local-data.js:%cExpired date set on data cleared in Storage', 'color:green', expireData);
+      }
+
+      return expireData;
+    }
+
+    createExpire (days = 0) {
+      const currentDate = new Date();
+      const endDate = this.parseDate(new Date().setDate(currentDate.getDate() + days), 'pretty');
+
+      return { '_expires': endDate };
+    }
+
+    setExpire (dataName, days = 0) {
+      return this._setExpire(dataName, days);
+    }
+
+    clearExpired (dataName) {
+      return this._put(dataName, this._clearExpired(this._get(dataName)));
+    }
+
+    isExpired (dataName) {
+      return dataName && this._isExpired(this._get(dataName));
+    }
+  }
+
+  momappoki.utilities.LocalData = class LocalData extends BaseLocalData {
+    constructor (dataName, storageType) {
+      super(storageType);
+
+      this.dataName = dataName;
+    }
+
+    dataParse () {
+      return super.dataParse(this.dataName);
+    }
+
+    add (data) {
+      return super._add(this.dataName, data);
+    }
+
+    update (data) {
+      return super._add(this.dataName, data);
+    }
+
+    put (data) {
+      return super._put(this.dataName, data);
+    }
+
+    remove (key) {
+      return super._remove(this.dataName, key);
+    }
+
+    get (key) {
+      return super._get(this.dataName, key);
+    }
+
+    setExpire (days = 0) {
+      return super._setExpire(this.dataName, days);
+    }
+
+    isExpired () {
+      return super.isExpired(this.dataName);
+    }
+
+    clearExpired () {
+      return super.clearExpired(this.dataName);
+    }
+  }
+
+  momappoki.utilities.localStorage = new BaseLocalData();
+  momappoki.utilities.sessionStorage = new BaseLocalData('sessionStorage');
+
+  window.momappoki = momappoki;
+})(window.momappoki, _, window);

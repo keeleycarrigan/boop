@@ -1,0 +1,39 @@
+/*
+  This utility will look for any query parameters and move them into localStorage by default
+
+  Params:
+  - Passing in a main key to categorize the parameters is required
+  - An experation other than 1 day can be set here as well to manage the data stored
+  - Specific keys can be passed in and filtered out of the total, the instance of the promoTracker would then only store those key/values at the passed in mainKey.
+    - This will allow seperate tracking of promo codes for different LOB's or campaign considerations
+  - Type should either be `sessionStorage` or `localStorage`
+
+*/
+
+(function init (momappoki = {}, _, window) {
+  momappoki.utilities = momappoki.utilities || {};
+
+  momappoki.utilities.promoTracker = (mainKey, experation = 1, keys = [], type = 'sessionStorage') => {
+    const urlParams = momappoki.utilities.getQueryParams();
+    const localData = new momappoki.utilities.LocalData(mainKey, type);
+    localData.clearExpired();
+    // Make sure we actually have queryParameters
+    if (urlParams) {
+      // Decide if we need to filter or not
+      const filteredParams = _.reduce(urlParams, (accum, value, key) => {
+        if (!keys.length || keys.indexOf(key) > -1) {
+          accum[key] = value;
+        }
+
+        return accum;
+      }, {});
+
+      if (!_.isEmpty(filteredParams)) {
+        localData.add(filteredParams);
+        localData.setExpire(experation);
+      }
+    }
+  };
+
+  window.momappoki = momappoki;
+})(window.momappoki, _, window);

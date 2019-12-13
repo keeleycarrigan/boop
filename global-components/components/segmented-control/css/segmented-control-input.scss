@@ -1,0 +1,25 @@
+@import "global/base/css/utilities";
+
+.segmented-ctrl-input {
+  .segmented-ctrl-trigger {
+    flex: 1;
+
+    .no-touch & {
+      &.active-item:hover {
+        background-color: $patina-2;
+        color: $slate-5;
+      }
+    }
+
+    &.active-item:not(.disabled) {
+      background-color: $patina-2;
+      color: $slate-5;
+    }
+  }
+}
+
+.segmented-ctrl-input-items {
+  height: rems(34);
+  border: 1px solid $slate-3;
+  display: flex;
+}

@@ -1,0 +1,161 @@
+@import "utilities";
+
+@mixin spacing-classes(
+$range,
+$prefix,
+$lvl,
+$type,
+$pad-amt
+) {
+  .#{$range}-#{$prefix}-#{$lvl} {
+    #{$type}: rems($pad-amt);
+  }
+
+  .#{$range}-#{$prefix}-h#{$lvl} {
+    #{$type}-left: rems($pad-amt);
+    #{$type}-right: rems($pad-amt);
+  }
+
+  .#{$range}-#{$prefix}-v#{$lvl} {
+    #{$type}-top: rems($pad-amt);
+    #{$type}-bottom: rems($pad-amt);
+  }
+
+  .#{$range}-#{$prefix}-t#{$lvl} {
+    #{$type}-top: rems($pad-amt);
+  }
+
+  .#{$range}-#{$prefix}-r#{$lvl} {
+    #{$type}-right: rems($pad-amt);
+  }
+
+  .#{$range}-#{$prefix}-b#{$lvl} {
+    #{$type}-bottom: rems($pad-amt);
+  }
+
+  .#{$range}-#{$prefix}-l#{$lvl} {
+    #{$type}-left: rems($pad-amt);
+  }
+}
+
+// $range = media query breakpoint name Ex: 'sm', 'md', 'lg'
+// $levels = number of padding levels to create
+// $base = level of padding to base all subsequent padding off
+@mixin spacing-levels (
+$range: "sm",
+$start-level: 1,
+$end-level: 10,
+$base: 10,
+$increment: 10
+) {
+
+  $num-levels: $end-level - $start-level;
+  $pad-amt: $base;
+
+  @for $i from 0 through $num-levels {
+    $pad-amt: ($i * $increment) + $base;
+    $lvl: $i + $start-level;
+
+    @include spacing-classes($range, "pad", $lvl, "padding", $pad-amt);
+    @include spacing-classes($range, "margin", $lvl, "margin", $pad-amt);
+  }
+}
+
+@mixin breakout-levels (
+$range: "sm",
+$start-level: 1,
+$end-level: 10,
+$base: 10,
+$increment: 10
+) {
+
+  $num-levels: $end-level - $start-level;
+  $pad-amt: $base;
+
+  @for $i from 0 through $num-levels {
+    $pad-amt: ($i * $increment) + $base;
+    $lvl: $i + $start-level;
+
+    .#{$range}-breakout-t#{$lvl} {
+      margin-top: rems($pad-amt);
+    }
+
+    .#{$range}-breakout-r#{$lvl} {
+      margin-right: rems($pad-amt);
+    }
+
+    .#{$range}-breakout-b#{$lvl} {
+      margin-bottom: rems($pad-amt);
+    }
+
+    .#{$range}-breakout-l#{$lvl} {
+      margin-left: rems($pad-amt);
+    }
+  }
+}
+
+@mixin output-spacing () {
+  $include-bps: ("sm", "md", "lg", "xl");
+  $spacing-tiers:(
+    (
+      "start": 1,
+      "end": 10,
+      "base": 10,
+      "increment": 5
+    ),
+    (
+      "start": 11,
+      "end": 25,
+      "base": 60,
+      "increment": 10
+    )
+  );
+
+  @each $bp in $include-bps {
+    $bp-def: map-get($breakpoints, $bp);
+    $range: map-get($bp-def, "min");
+
+    @if ($range) {
+      @media #{$range} {
+        .#{$bp}-pad-none {
+           padding: 0 !important;
+        }
+
+        .#{$bp}-margin-none {
+           margin: 0 !important;
+        }
+
+        @include spacing-classes($bp, "pad", 0, "padding", 0);
+        @include spacing-classes($bp, "margin", 0, "margin", 0);
+
+        @each $tier in $spacing-tiers {
+          @include spacing-levels(
+            $range: $bp,
+            $start-level: map-get($tier, "start"),
+            $end-level: map-get($tier, "end"),
+            $base: map-get($tier, "base"),
+            $increment: map-get($tier, "increment")
+          );
+
+          @include breakout-levels(
+            $range: $bp,
+            $start-level: 1,
+            $end-level: 10,
+            $base: -10,
+            $increment: -10
+          );
+        }
+      }
+    }
+  }
+}
+
+/**
+	SHOULD PUT OUT LEVELS 0-10 & 11-25.
+	0 - 55PX (5 pixel increment)
+  60 - 200PX (10 pixel increment)
+
+  BREAKOUT LEVELS 1-10
+  -10 - -100px
+**/
+@include output-spacing();

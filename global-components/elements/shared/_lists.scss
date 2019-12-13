@@ -1,0 +1,119 @@
+@import "global/base/css/utilities";
+/**
+  These lists are broken out into mixins so their base styling can be
+  used in other places without importing the whole file to extend, which
+  would lead to a lot of repeated CSS. This way our list elements and
+  FAQ content module can share the styling but only include the minimum
+  amount of CSS needed.
+
+  These lists are built using custom counters and normal list style
+  symbols so that we can achieve the specific amount of spacing between
+  the symbol and text. Also, when using "list-position: inside" which is
+  default and necessary for multiline list items it's the only way to be
+  sure that the symbol lines up with other content.
+**/
+@mixin symbol-list {
+  padding-left: 1.5em;
+  position: relative;
+
+  > li {
+    &::before {
+      position: absolute;
+      left: 0;
+    }
+  }
+}
+
+@mixin list-default {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+
+  li {
+    margin-bottom: rems(10);
+    line-height: 1.5;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}
+
+
+@mixin list-bulleted {
+  @include list-default;
+  @include symbol-list;
+  counter-reset: bullet-counter;
+
+  > li::before {
+    content: counter(bullet-counter, disc);
+    counter-increment: bullet-counter;
+  }
+}
+
+@mixin list-ordered {
+  @include list-default;
+  @include symbol-list;
+  padding-left: 1.3em;
+  counter-reset: ordered-counter;
+
+  > li::before {
+    content: counter(ordered-counter, decimal)".";
+    counter-increment: ordered-counter;
+  }
+}
+
+@mixin list-nested {
+  @include list-default;
+  @include symbol-list;
+  margin-top: rems(10);
+  counter-reset: nested-counter;
+
+  > li::before {
+    content: counter(nested-counter, circle);
+    counter-increment: nested-counter;
+    /**
+      Setting these relational units specifically here so the nested circle is
+      in proportion to the bullet and surruounding text no matter the list font
+      size.
+    **/
+    font-size: 1.7em;
+    line-height: 0.95;
+  }
+}
+
+@mixin list-low-alpha {
+  @include list-default;
+  @include symbol-list;
+  list-style-type: lower-alpha;
+}
+
+@mixin list-horizontal {
+  width: auto;
+  margin-left: rems(-10);
+  margin-right: rems(-10);
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+
+  > li {
+    padding-left: rems(10);
+    padding-right: rems(10);
+    line-height: 1.25;
+  }
+
+  &.separated {
+    margin-left: rems(-20);
+    margin-right: rems(-20);
+
+    > li {
+      padding-left: rems(20);
+      padding-right: rems(20);
+      border-right: 1px solid $slate-3;
+
+      &:last-child {
+        border-right: none;
+      }
+    }
+  }
+}

@@ -1,0 +1,554 @@
+@import "global/base/css/utilities";
+@import "native-select";
+
+%base-txt-input {
+  width: 100%;
+  color: $slate-5;
+  font-size: rems(16);
+  border: 1px solid $slate-3;
+  appearance: none;
+  border-radius: 0;
+  display: block;
+  transition: background-color 200ms linear;
+
+  &::placeholder {
+    font-style: italic;
+    color: $slate-4;
+  }
+
+  &.disabled, &[disabled] {
+    color: $slate-3;
+    background-color: $slate-2;
+    border: 1px solid rgba($black, 0.1);
+
+    &::after {
+      color: $slate-3;
+    }
+  }
+
+  .has-error &,
+  &.has-error {
+    border-color: $error;
+  }
+
+  @media #{$large} {
+    font-size: rems(14);
+  }
+}
+
+.basic-input {
+  @extend %base-txt-input;
+  height: rems(45);
+  padding: rems((3, 10, 5, 10));
+
+  @media #{$large} {
+    height: rems(34);
+  }
+
+  &::-webkit-inner-spin-button,
+  &::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  /* clears the 'X' from Internet Explorer */
+  &[type="search"]::-ms-clear {  display: none; width : 0; height: 0; }
+  &[type="search"]::-ms-reveal {  display: none; width : 0; height: 0; }
+
+  /* clears the 'X' from Chrome */
+  &[type="search"]::-webkit-search-decoration,
+  &[type="search"]::-webkit-search-cancel-button,
+  &[type="search"]::-webkit-search-results-button,
+  &[type="search"]::-webkit-search-results-decoration { display: none; }
+}
+
+.basic-textarea {
+  @extend %base-txt-input;
+  padding: rems(10);
+  line-height: 1.8;
+}
+
+.basic-input-wrap {
+  position: relative;
+}
+
+%basic-input-actions {
+  display: flex;
+  position: absolute;
+  top: 0;
+}
+
+.basic-input-actions-right {
+  @extend %basic-input-actions;
+  right: 0;
+}
+
+.basic-input-actions-left {
+  @extend %basic-input-actions;
+  left: 0;
+}
+
+.basic-input-action {
+  height: rems(45);
+  width: rems(45);
+  color: $sky-3;
+  font-size: rems(24);
+  border: none;
+  outline-offset: -4px;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  @media #{$large} {
+    height: rems(34);
+    width: rems(34);
+  }
+}
+
+
+.basic-label {
+  color: $slate-5;
+  font-weight: bold;
+  font-size: rems(11);
+  line-height: rems(20);
+  text-transform: uppercase;
+  display: inline-block;
+}
+
+.basic-label-alt {
+  @extend .basic-label;
+
+  @media #{$large} {
+    font-size: rems(14);
+    line-height: rems(25);
+    text-transform: none;
+  }
+}
+
+.basic-label-question {
+  @extend .basic-label;
+  font-size: rems(14);
+  line-height: rems(25);
+  text-transform: none;
+}
+
+.basic-select {
+  @include native-select;
+}
+
+.basic-control-label {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.basic-control-txt {
+  font-size: rems(14);
+  line-height: 1.5;
+  display: flex;
+  align-items: center;
+  position: relative;
+
+  &::before {
+    content: "";
+    height: rems(24);
+    width: rems(24);
+    margin-right: rems(10);
+    background-color: $white;
+    color: $sky-3;
+    font-size: rems(14);
+    font-family: "Allycons";
+    text-align: center;
+    border: 1px solid $slate-3;
+    display: flex;
+    align-self: flex-start;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+  }
+
+  &::after {
+    content: "";
+  }
+
+  .has-error &,
+  &.has-error {
+    &::before {
+      border-color: $error;
+    }
+  }
+}
+
+.basic-checkbox-input,
+.basic-radio-input,
+.basic-toggle-input {
+  background: none;
+  font-size: rems(16);
+  border: none;
+  -webkit-appearance: none; // Setting this for other browsers messes default outline up.
+  position: absolute;
+  left: 0;
+  top: 0;
+  // z-index: -1;
+  // transform: translateY(-50%);
+
+  &[disabled] ~ .basic-control-txt::before {
+    background-color: $slate-2;
+    color: $slate-3;
+    border-color: rgba($black, 0.1);
+  }
+
+  @media #{$large} {
+    font-size: rems(14);
+  }
+}
+
+.basic-checkbox-input,
+.basic-radio-input {
+  height: rems(24);
+  width: rems(24);
+}
+
+.basic-checkbox-input {
+  &:checked ~ .basic-control-txt::before {
+    content: "\e917";
+  }
+}
+
+.basic-toggle-input {
+  height: rems(34);
+  width: rems(58);
+
+  ~ .basic-control-txt {
+    color: $slate-5;
+
+    &::before {
+      height: rems(34);
+      width: rems(58);
+      background-color: $slate-1;
+      border-radius: rems(24);
+      transition: background-color 50ms linear;
+    }
+
+    &::after {
+      height: rems(24);
+      width: rems(24);
+      margin: rems(5);
+      border-radius: 100%;
+      border: 1px solid $slate-3;
+      background-color: $white;
+      position: absolute;
+      left: 0;
+      top: 0;
+      transition: left 100ms linear;
+    }
+
+    .basic-toggle-on-txt,
+    .basic-toggle-off-txt {
+      text-transform: uppercase;
+    }
+
+    .basic-toggle-on-txt {
+      display: none;
+    }
+  }
+
+  &:checked ~ .basic-control-txt {
+    &::before {
+      background: $sky-3;
+    }
+
+    &::after {
+      border-color: transparent;
+      left: rems(24);
+    }
+
+    .basic-toggle-on-txt {
+      display: inline;
+    }
+
+    .basic-toggle-off-txt {
+      display: none;
+    }
+  }
+}
+
+.basic-radio-input {
+  ~ .basic-control-txt {
+    color: $slate-5;
+
+    &::before,
+    &::after {
+      border-radius: 100%;
+    }
+  }
+
+  &:checked ~ .basic-control-txt {
+    &::before {
+      content: "";
+    }
+
+    &::after {
+      content: "";
+      height: rems(12);
+      width: rems(12);
+      margin: rems(6);
+      background-color: $sky-3;
+      display: block;
+      position: absolute;
+      left: 0;
+      top: 0;
+    }
+  }
+}
+
+.basic-stepper-input {
+  height: rems(45);
+  width: 100%;
+  border: 1px solid $slate-3;
+  display: flex;
+  transition: width 300ms linear;
+
+  /**
+    This class will make the middle input shrink down so that only the inc/dec
+    buttons show.
+  **/
+  &.shrink {
+    width: rems(89);
+
+    .basic-input {
+      padding-left: 0;
+      padding-right: 0;
+      border-right: none;
+    }
+  }
+
+  @media #{$large} {
+    height: rems(34);
+
+    &.shrink {
+      width: rems(67);
+    }
+  }
+
+  .basic-input {
+    height: 100%;
+    border-top: none;
+    border-bottom: none;
+    outline-offset: -3px;
+    transition: padding 300ms linear;
+  }
+}
+
+.basic-stepper-input-btn {
+  height: 100%;
+  width: rems(43);
+  background-color: $white;
+  color: $sky-3;
+  border: none;
+  outline-offset: -3px;
+  flex: 0 0 auto;
+  transition: background-color 200ms linear;
+
+  @media #{$large} {
+    width: rems(32)
+  }
+
+  .no-touch & {
+    &:hover {
+      background-color: $light-gray;
+    }
+  }
+
+  &[disabled],
+  &.disabled {
+    color: $slate-3;
+    background-color: $slate-2;
+  }
+
+  [class*="momacon-"] {
+    font-size: rems(16);
+  }
+}
+
+.basic-form-error-msg {
+  padding-top: rems(5);
+  color: $error;
+
+  .basic-form-error-msg + & {
+    padding-top: 0;
+  }
+}
+
+.basic-form-ax-error-container {
+  margin: -1px;
+  border: 0;
+  padding: 0;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+}
+
+.basic-form-ax-error-msg:focus {
+  outline: none;
+}
+
+
+@mixin range-thumb {
+  border: 2px solid $slate-3;
+  height: rems(30);
+  width: rems(30);
+  border-radius: 50%;
+  background: $white;
+  cursor: pointer;
+  margin-top: rems(-12);
+  box-sizing: border-box;
+}
+
+@mixin range-thumb-focused {
+  border-color: $sky-2;
+}
+
+@mixin range-thumb-disabled {
+  border-color: $slate-3;
+  opacity: 0.33;
+}
+@mixin range-thumb-disabled-focused {
+  border-color: $slate-3;
+}
+
+@mixin range-track {
+  width: 100%;
+  height: rems(10);
+  cursor: pointer;
+  background: transparent;
+  border-radius: rems(5);
+}
+
+.basic-range-input {
+  width: 100%;
+  margin-top: rems(10);
+  margin-bottom: rems(10);
+  background: $slate-1;
+  border-radius: rems(5);
+  -webkit-appearance: none;
+
+  &::-webkit-slider-thumb {
+    @include range-thumb;
+    -webkit-appearance: none;
+  }
+
+  &::-moz-range-thumb {
+    @include range-thumb;
+  }
+
+  &::-webkit-slider-runnable-track {
+    @include range-track;
+  }
+
+  &::-moz-range-track {
+    @include range-track;
+  }
+
+  .ie & {
+    height: rems(30);
+    background: $slate-1 !important;
+    border-radius: rems(15);
+    border: none;
+
+    @media #{$large} {
+      height: rems(20);
+      border-radius: rems(10);
+    }
+
+    &::-ms-thumb {
+      @include range-thumb;
+      height: rems(22);
+      width: rems(60);
+      margin-top: 0;
+      border-radius: rems(11);
+
+      @media #{$large} {
+        height: rems(12);
+        width: rems(30);
+        border-radius: rems(6);
+      }
+    }
+
+    &::-ms-track {
+      @include range-track;
+      height: rems(30);
+      border-radius: rems(15);
+      border: none;
+
+      @media #{$large} {
+        height: rems(20);
+        border-radius: rems(10);
+      }
+
+    }
+
+    &::-ms-fill-upper {
+      background-color: $slate-1;
+    }
+
+    &::-ms-fill-lower {
+      background-color: $sky-2;
+    }
+  }
+
+  &.disabled,
+  &[disabled] {
+    // This important is to override the inline style added by the JS component.
+    background: $slate-1 !important;
+    pointer-events: none;
+
+    &::-webkit-slider-thumb {
+      @include range-thumb-disabled;
+    }
+
+    &::-moz-range-thumb {
+      @include range-thumb-disabled;
+    }
+
+    &::-ms-thumb {
+      @include range-thumb-disabled;
+    }
+
+    &:focus {
+      &::-webkit-slider-thumb {
+        @include range-thumb-disabled-focused;
+      }
+
+      &::-moz-range-thumb {
+        @include range-thumb-disabled-focused;
+      }
+
+      &::-ms-thumb {
+        @include range-thumb-disabled-focused;
+      }
+    }
+  }
+
+  &:focus {
+    outline: none;
+
+    &::-webkit-slider-thumb {
+      @include range-thumb-focused;
+    }
+
+    &::-moz-range-thumb {
+      @include range-thumb-focused;
+    }
+
+    &::-ms-thumb {
+      @include range-thumb-focused;
+    }
+
+    &::-moz-focus-outer {
+      border: 0;
+    }
+  }
+}

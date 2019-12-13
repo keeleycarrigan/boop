@@ -1,0 +1,91 @@
+@import "global/base/css/utilities";
+
+.pill-btn-group {
+  display: flex;
+  justify-content: center;
+
+  @media #{$small-and-medium-only} {
+    flex-direction: column;
+
+    .pill-btn {
+      margin-bottom: rems(20);
+    }
+
+    :last-child.pill-btn {
+      margin: 0
+    }
+  }
+  @media #{$large} {
+    flex-direction: row;
+
+    .pill-btn {
+      margin: rems(0 10);
+    }
+  }
+}
+
+.pill-btn {
+  transition: background-color 200ms linear;
+  border: 1px solid $slate-3;
+  border-radius: rems(23);
+  background-color: $white;
+  padding: rems(10 20);
+  text-align: center;
+  line-height: rems(23);
+  color: $sky-3;
+  font-size: rems(14);
+  font-weight: 700;
+
+  @media #{$large} {
+    padding: rems(0 10);
+    line-height: rems(34);
+  }
+
+  &:focus {
+    outline: none;
+  }
+
+  .keydown-focus & {
+    &:focus {
+      outline: none;
+      text-decoration: underline;
+    }
+  }
+
+  &:active {
+    text-decoration: none;
+  }
+
+  &.active-item {
+    background-color: $slate-4;
+    color: $white;
+  }
+
+  &.disabled,
+  &.disabled.active {
+    background-color: $slate-1;
+    color: $slate-3;
+    pointer-events: none;
+
+    &:focus {
+      text-decoration: none;
+    }
+  }
+
+  .no-touch & {
+    &:hover {
+      background-color: $light-gray;
+      text-decoration: none;
+    }
+
+    &.active-item:hover {
+      background-color: $slate-3;
+      color: $white;
+    }
+
+    &.disabled:hover {
+      background-color: $slate-1;
+      color: $slate-5;
+    }
+  }
+}
