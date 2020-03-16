@@ -1191,6 +1191,18 @@
   dependencies:
     "@babel/runtime" "7.1.2"
 
+"@momappoki/elements-utils@^1.0.0-rc1":
+  version "1.0.0-rc1"
+  resolved "https://registry.yarnpkg.com/@momappoki/elements-utils/-/elements-utils-1.0.0-rc1.tgz#f103434b758f53744d70b516ac01579d327642b6"
+  integrity sha512-QDNCqXuviARHp7af35RTCloee9kUlFazzSQtZRvUw3sJbxkh6TCiT5COCaiczTxqjlD5C9M9KEKZW0q+KkR6Vg==
+
+"@momappoki/elements@^1.0.0-rc2.3":
+  version "1.0.0-rc2.3"
+  resolved "https://registry.yarnpkg.com/@momappoki/elements/-/elements-1.0.0-rc2.3.tgz#bb21dbb989a73dc99aa67482c689565293db05cc"
+  integrity sha512-WVCJYcUNMUrtpM92x+1ZaJhxP4J1/n5e1kn7IBKeeZs5jrKBqOE2QG6J57gUQxC5ZQeCvC1YZT3NaXSjS2x0qQ==
+  dependencies:
+    "@momappoki/elements-utils" "^1.0.0-rc1"
+
 "@mrmlnc/readdir-enhanced@^2.2.1":
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/@mrmlnc/readdir-enhanced/-/readdir-enhanced-2.2.1.tgz#524af240d1a360527b730475ecfa1344aa540dde"
@@ -1242,27 +1254,15 @@
   resolved "https://registry.yarnpkg.com/@types/semver/-/semver-5.5.0.tgz#146c2a29ee7d3bae4bf2fcb274636e264c813c45"
   integrity sha512-41qEJgBH/TWgo5NFSvBCJ1qkoi3Q6ONSF2avrHq1LVEZfYpdHmj0y9SuTK+u9ZhG1sYQKBL1AWXKyLWP4RaUoQ==
 
-"@momappoki/elements-utils@^1.0.0-rc1":
-  version "1.0.0-rc1"
-  resolved "https://registry.yarnpkg.com/@momappoki/elements-utils/-/elements-utils-1.0.0-rc1.tgz#f103434b758f53744d70b516ac01579d327642b6"
-  integrity sha512-QDNCqXuviARHp7af35RTCloee9kUlFazzSQtZRvUw3sJbxkh6TCiT5COCaiczTxqjlD5C9M9KEKZW0q+KkR6Vg==
-
-"@momappoki/elements@^1.0.0-rc2.3":
-  version "1.0.0-rc2.3"
-  resolved "https://registry.yarnpkg.com/@momappoki/elements/-/elements-1.0.0-rc2.3.tgz#bb21dbb989a73dc99aa67482c689565293db05cc"
-  integrity sha512-WVCJYcUNMUrtpM92x+1ZaJhxP4J1/n5e1kn7IBKeeZs5jrKBqOE2QG6J57gUQxC5ZQeCvC1YZT3NaXSjS2x0qQ==
-  dependencies:
-    "@momappoki/elements-utils" "^1.0.0-rc1"
-
 abbrev@1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/abbrev/-/abbrev-1.1.1.tgz#f8f2c887ad10bf67f634f005b6987fed3179aac8"
   integrity sha512-nne9/IiQ/hzIhY6pdDnbBtz7DjPTKrY00P/zvPSm5pOFkl6xuGrGnXn/VtTNNfNtAfZ9/1RtehkszU9qcTii0Q==
 
 acorn@^5.0.0:
-  version "5.7.3"
-  resolved "https://registry.yarnpkg.com/acorn/-/acorn-5.7.3.tgz#67aa231bf8812974b85235a96771eb6bd07ea279"
-  integrity sha512-T/zvzYRfbVojPWahDsE5evJdHb3oJoQfFbsrKM7w5Zcs++Tr257tia3BmMP8XYVjp1S9RZXQMh7gao96BlqZOw==
+  version "5.7.4"
+  resolved "https://registry.yarnpkg.com/acorn/-/acorn-5.7.4.tgz#3e8d8a9947d0599a1796d10225d7432f4a4acf5e"
+  integrity sha512-1D++VG7BhrtvQpNbBzovKNc1FLGGEE/oGe7b9xJm/RFHMBeUaUGpluV9RLjZa47YFdPcDAenEYuq9pQPcMdLJg==
 
 alphanum-sort@^1.0.0, alphanum-sort@^1.0.1, alphanum-sort@^1.0.2:
   version "1.0.2"
